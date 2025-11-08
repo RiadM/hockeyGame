@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Stats Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 2px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #2980b9;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        .highlight {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        /* Header colors */
+        .regular-season-header {
+            background-color: #f39c12;
+        }
+        .playoffs-header {
+            background-color: #e74c3c;
+        }
+        /* Columns for index labels */
+        .indice-1 {
+            background-color: #dcdde1;
+            font-weight: bold;
+        }
+        .indice-2 {
+            background-color: #bdc3c7;
+        }
+        .indice-3 {
+            background-color: #ecf0f1;
+        }
+    </style>
+</head>
+<body>
+
+<h1>Player Career Statistics</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th rowspan="2">Season</th>
+            <th rowspan="2">Team</th>
+            <th rowspan="2">Lge</th>
+            <th colspan="6" class="regular-season-header">Regular Season</th>
+            <th colspan="6" class="playoffs-header">Playoffs</th>
+        </tr>
+        <tr>
+            <th>GP</th>
+            <th>G</th>
+            <th>A</th>
+            <th>Pts</th>
+            <th>PIM</th>
+            <th>+/-</th>
+            <th>GP</th>
+            <th>G</th>
+            <th>A</th>
+            <th>Pts</th>
+            <th>PIM</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="highlight">
+            <td>2003-04</td>
+            <td>Rimouski Oceanic</td>
+            <td>QMJHL</td>
+            <td>59</td>
+            <td>33</td>
+            <td>60</td>
+            <td>93</td>
+            <td>74</td>
+            <td>45</td>
+            <td>12</td>
+            <td>7</td>
+            <td>19</td>
+            <td>12</td>
+            <td>6</td>
+        </tr>
+        <tr>
+            <td>2004-05</td>
+            <td>Rimouski Oceanic</td>
+            <td>QMJHL</td>
+            <td>68</td>
+            <td>52</td>
+            <td>71</td>
+            <td>123</td>
+            <td>85</td>
+            <td>19</td>
+            <td>10</td>
+            <td>5</td>
+            <td>15</td>
+            <td>20</td>
+            <td>4</td>
+        </tr>
+        <!-- Add more rows as needed -->
+    </tbody>
+</table>
+
+</body>
+</html>

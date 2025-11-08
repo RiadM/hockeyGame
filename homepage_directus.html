@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Stats Table</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 2px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background-color: #2980b9;
+            color: white;
+        }
+        td {
+            background-color: #f9f9f9;
+        }
+        .highlight {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        /* Header colors */
+        .regular-season-header {
+            background-color: #f39c12;
+        }
+        .playoffs-header {
+            background-color: #e74c3c;
+        }
+        /* Toggle buttons */
+        .toggle-btn {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+
+
+         .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: #0056b3;
+        }
+
+        .button:active {
+            transform: scale(0.98);
+        }
+
+        .button:nth-of-type(2) {
+            background-color: #28a745;
+        }
+
+        .button:nth-of-type(2):hover {
+            background-color: #218838;
+        }
+
+        .button:nth-of-type(3) {
+            background-color: #dc3545;
+        }
+
+        .button:nth-of-type(3):hover {
+            background-color: #c82333;
+        }
+
+         .hidden {
+            display: none !important; /* Use !important to ensure it's applied */
+        }
+    </style>
+</head>
+<body>
+
+<h1>Player Career Statistics</h1>
+
+<table id="statsTable">
+    <thead>
+        <tr>
+            <th rowspan="2">Season</th>
+            <th rowspan="2" class="team hidden">Team</th>
+            <th rowspan="2" >Lge</th>
+            <th colspan="6" class="regular-season-header">Regular Season</th>
+            <th colspan="6" class="playoffs-header hidden">Playoffs</th>
+        </tr>
+        <tr>
+            <th>GP</th>
+            <th>G</th>
+            <th>A</th>
+            <th>Pts</th>
+            <th>PIM</th>
+            <th>+/-</th>
+            <th class="playoffs-column hidden">GP</th>
+            <th class="playoffs-column hidden">G</th>
+            <th class="playoffs-column hidden">A</th>
+            <th class="playoffs-column hidden">Pts</th>
+            <th class="playoffs-column hidden">PIM</th>
+        </tr>
+    </thead>
+    <tbody>
+        <!-- Rows will be dynamically inserted here -->
+    </tbody>
+</table>
+<div class="button-container">
+        <button class="button" id="indice1">Junior Indice</button>
+        <button class="button" id="indice2">Playoff Indice</button>
+        <button class="button" id="indice3">Team Indice</button>
+    </div>
+
+<script type="module">
+    import { createDirectus, rest, readItems } from 'https://esm.sh/@directus/sdk';
+
+    // Create the Directus client
+    const client = createDirectus('http://localhost:8055').with(rest());
+
+    // Function to fetch data from Directus
+    async function fetchStats() {
+        try {
+            const response = await client.request(
+            readItems('players', {
+                filter : {
+                        _and : [
+                        {
+                            "id" : {
+                             _eq:2,
+                            },
+                        },
+                    ]
+                },
+                sort :["seasons_id.created_at"],
+                fields: [
+                    '*',
+                    "seasons_id.*.*",
+                    ],
+            })
+        );
+            console.log("********************************************");
+            console.log("********************************************");
+            console.log(response[0]);
+            // If successful, populate the table
+            populateTable(response[0]);
+        } catch (error) {
+            console.error('Error fetching player stats:', error);
+        }
+    }
+
+    // Function to populate the table dynamically
+    function populateTable(stats) {
+        const tableBody = document.querySelector('#statsTable tbody');
+        tableBody.innerHTML = ''; // Clear previous content
+        console.log("********************************************");
+        console.log("********************************************");
+        console.log("********************************************");
+        console.log(stats.seasons_id);
+
+        stats.seasons_id.forEach(stat => {
+            const row = document.createElement('tr');
+
+            if(stat.league_id.abbreviation != "NHL"){
+                row.classList.add("rookie","hidden");
+            }
+
+            const regularSeason = stat.regular_season_id;
+            const playoff = stat.playoff_id;
+            row.innerHTML = `
+                <td>${stat.season_year}</td>
+                <td class="team hidden">${stat.team_id.team_name}</td>
+                <td>${stat.league_id.abbreviation}</td>
+                
+                <td >${regularSeason.games_played}</td>
+                <td>${regularSeason.goals}</td>
+                <td>${regularSeason.assists}</td>
+                <td>${regularSeason.points}</td>
+                <td>${regularSeason.penality_minutes}</td>
+                <td>${regularSeason.plus_minus}</td>
+
+                <td class="playoffs-column hidden">${playoff.games_played}</td>
+                <td class="playoffs-column hidden">${playoff.goals}</td>
+                <td class="playoffs-column hidden">${playoff.assists}</td>
+                <td class="playoffs-column hidden">${playoff.points}</td>
+                <td class="playoffs-column hidden">${playoff.penality_minutes}</td>
+
+            `;
+
+            tableBody.appendChild(row);
+        });
+    }
+
+    // Fetch stats when the page loads
+    fetchStats();
+
+
+    // Initial state of the column visibility
+    let columnVisible = true;
+     document.getElementById('indice1').addEventListener('click', () => {
+        console.log('indice 1 clicked');
+        // Select all cells in the playoffs column
+        const rookieCells = document.querySelectorAll('.rookie');
+
+        // Toggle visibility by adding or removing the 'hidden' class
+         rookieCells.forEach(header => {
+            header.classList.toggle('hidden');
+        });
+
+        // Update button text based on the current state
+        columnVisible = !columnVisible;
+        toggleButton.textContent = columnVisible ? 'Hide rookie Column' : 'Show rookie Column';
+    });
+
+     // Initial state of the column visibility
+    let columnVisible2 = true;
+     document.getElementById('indice2').addEventListener('click', () => {
+        console.log('indice 2 clicked');
+        // Select all cells in the playoffs column
+        const playoffHeaders = document.querySelectorAll('.playoffs-header');
+        const playoffCells = document.querySelectorAll('.playoffs-column');
+
+        // Toggle visibility by adding or removing the 'hidden' class
+         playoffHeaders.forEach(header => {
+            header.classList.toggle('hidden');
+        });
+        playoffCells.forEach(cell => {
+            cell.classList.toggle('hidden');
+        });
+
+        // Update button text based on the current state
+        columnVisible2 = !columnVisible2;
+        toggleButton.textContent = columnVisible2 ? 'Hide Playoffs Column' : 'Show Playoffs Column';
+    });
+
+     // Initial state of the column visibility
+    let columnVisible3 = true;
+     document.getElementById('indice3').addEventListener('click', () => {
+        console.log('indice 3 clicked');
+        // Select all cells in the playoffs column
+        const teamCells = document.querySelectorAll('.team');
+
+        // Toggle visibility by adding or removing the 'hidden' class
+         teamCells.forEach(header => {
+            header.classList.toggle('hidden');
+        });
+
+        // Update button text based on the current state
+        columnVisible3 = !columnVisible3;
+        toggleButton.textContent = columnVisible3 ? 'Hide team Column' : 'Show team Column';
+    });
+
+</script>
+
+</body>
+</html>

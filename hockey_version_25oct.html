@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Player Statistics</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --background-color: #ecf0f1;
+            --text-color: #34495e;
+            --border-color: #bdc3c7;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            box-shadow: var(--box-shadow);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .logo, .score {
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .main-content {
+            display: flex;
+            flex: 1;
+        }
+
+        .publicity {
+            width: 20%;
+            padding: 20px;
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        .game-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .stats-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        .stats-table th, .stats-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px;
+            text-align: center;
+        }
+
+        .stats-table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .stats-table tr:nth-child(even) {
+            background-color: var(--background-color);
+        }
+
+        .stats-table .season-col {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .stats-table .team-col {
+            background-color: #2980b9;
+            color: white;
+        }
+
+        .stats-table .league-col {
+            background-color: #3498db;
+            color: white;
+        }
+
+        .stats-table .regular-season {
+            background-color: #f39c12;
+            color: white;
+        }
+
+        .stats-table .playoffs {
+            background-color: #e74c3c;
+            color: white;
+        }
+
+        .user-input {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        input[type="text"] {
+            flex: 1;
+            min-width: 200px;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 1em;
+            transition: var(--transition);
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        }
+
+        .buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        button:first-child {
+            background-color: var(--secondary-color);
+            color: white;
+        }
+
+        button:last-child {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .search-row {
+            display: flex;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .hint-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+
+            .publicity {
+                width: 100%;
+                order: 2;
+            }
+
+            .game-area {
+                order: 1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">HockeyStats</div>
+            <div class="score">Score: 0</div>
+        </header>
+        <div class="main-content">
+            <!--<div class="publicity">
+                <h2>Featured</h2>
+                <p>Check out our latest player statistics and analysis!</p>
+            </div>
+        -->
+            <div class="game-area">
+                <table class="stats-table">
+                    <thead>
+                        <tr>
+                            <th class="season-col">Season</th>
+                            <th class="team-col">Team</th>
+                            <th class="league-col">Lge</th>
+                            <th class="regular-season" colspan="6">Regular Season</th>
+                            <th class="playoffs" colspan="5">Playoffs</th>
+                        </tr>
+                        <tr>
+                            <th></th>
+                            <th></th>
+                            <th></th>
+                            <th>GP</th>
+                            <th>G</th>
+                            <th>A</th>
+                            <th>Pts</th>
+                            <th>PIM</th>
+                            <th>+/-</th>
+                            <th>GP</th>
+                            <th>G</th>
+                            <th>A</th>
+                            <th>Pts</th>
+                            <th>PIM</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2003-04</td>
+                            <td>Rimouski Oceanic</td>
+                            <td>QMJHL</td>
+                            <td>59</td>
+                            <td>33</td>
+                            <td>60</td>
+                            <td>93</td>
+                            <td>74</td>
+                            <td>45</td>
+                            <td>12</td>
+                            <td>7</td>
+                            <td>19</td>
+                            <td>12</td>
+                            <td>6</td>
+                        </tr>
+                        <tr>
+                            <td>2004-05</td>
+                            <td>Rimouski Oceanic</td>
+                            <td>QMJHL</td>
+                            <td>68</td>
+                            <td>52</td>
+                            <td>71</td>
+                            <td>123</td>
+                            <td>85</td>
+                            <td>19</td>
+                            <td>10</td>
+                            <td>5</td>
+                            <td>15</td>
+                            <td>20</td>
+                            <td>4</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="user-input">
+                    <div class="search-row">
+                        <input type="text" placeholder="Enter player name to search...">
+                        <button>Guess</button>
+                    </div>
+                    <div class="hint-row">
+                        <button>Hint</button>
+                    </div>
+                </div>
+        </div>
+    </div>
+</body>
+</html>
