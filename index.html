@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>HockeyStats</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="brand">HockeyStats</div>
+      <div class="scoreboard">Score: <span id="score">0</span></div>
+    </header>
+
+    <main class="app-main">
+      <section class="table-card">
+        <h1 class="card-title">Mystery Player Career Stats</h1>
+        <div class="table-wrapper">
+          <table class="stats-table" aria-describedby="table-note">
+            <thead id="table-head"></thead>
+            <tbody id="stats-body"></tbody>
+          </table>
+        </div>
+        <p id="table-note" class="table-note">
+          Regular season and playoff totals are pulled directly from the local HockeyDB-style dataset.
+        </p>
+      </section>
+
+      <section class="interaction-card">
+        <form id="guess-form" class="guess-form" autocomplete="off">
+          <label class="field-label" for="guess-input">Enter player name to search…</label>
+          <div class="field-group">
+            <input
+              id="guess-input"
+              name="guess"
+              type="text"
+              placeholder="Sidney Crosby"
+              list="player-options"
+              required
+            />
+            <datalist id="player-options"></datalist>
+            <button type="submit" class="primary-button">Guess</button>
+          </div>
+        </form>
+        <div class="action-row">
+          <button id="hint-button" type="button" class="secondary-button">Hint</button>
+          <button id="next-button" type="button" class="secondary-button hidden">Next Player</button>
+        </div>
+        <div id="feedback" class="feedback" role="status"></div>
+        <div id="hint-output" class="hint-output" aria-live="polite"></div>
+      </section>
+    </main>
+
+    <footer class="app-footer">
+      <p>
+        HockeyStats is a single-page guessing game. Host these static files anywhere (including GitHub Pages) to play in the
+        browser.
+      </p>
+    </footer>
+
+    <script src="main.js" type="module"></script>
+  </body>
+</html>

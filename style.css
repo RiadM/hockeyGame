@@ -1,0 +1,240 @@
+:root {
+  font-family: "Roboto", "Segoe UI", Helvetica, Arial, sans-serif;
+  color: #1f2d3d;
+  background-color: #eaf1f8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(180deg, #eaf1f8 0%, #f7fbff 100%);
+}
+
+.app-header {
+  background: #1e88e5;
+  color: #ffffff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 2rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.brand {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.scoreboard {
+  font-size: 1.25rem;
+  font-weight: 500;
+}
+
+.app-main {
+  flex: 1;
+  width: min(1100px, 92vw);
+  margin: 2rem auto;
+  display: grid;
+  gap: 2rem;
+}
+
+.table-card,
+.interaction-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 1.75rem;
+  box-shadow: 0 12px 24px rgba(30, 66, 116, 0.15);
+}
+
+.card-title {
+  margin: 0 0 1rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid #d7e2ef;
+}
+
+.stats-table {
+  width: 100%;
+  border-collapse: collapse;
+  color: #1f2d3d;
+  font-size: 0.95rem;
+}
+
+.stats-table thead th {
+  background: #2196f3;
+  color: #ffffff;
+  font-weight: 500;
+  padding: 0.75rem 0.5rem;
+  text-align: center;
+  border-right: 1px solid rgba(255, 255, 255, 0.35);
+}
+
+.stats-table thead tr:nth-child(2) th {
+  background: #1976d2;
+  font-size: 0.8rem;
+  letter-spacing: 0.04em;
+}
+
+.stats-table thead th:first-child,
+.stats-table thead th:nth-child(2),
+.stats-table thead th:nth-child(3) {
+  text-align: left;
+  padding-left: 0.75rem;
+}
+
+.stats-table tbody td {
+  padding: 0.65rem 0.5rem;
+  border-top: 1px solid #dce6f2;
+  border-right: 1px solid #edf2f8;
+  text-align: center;
+}
+
+.stats-table tbody td:first-child,
+.stats-table tbody td:nth-child(2),
+.stats-table tbody td:nth-child(3) {
+  text-align: left;
+  padding-left: 0.75rem;
+}
+
+.stats-table tbody tr:nth-child(even) {
+  background: #f3f8ff;
+}
+
+.table-note {
+  margin: 1rem 0 0;
+  color: #4d6478;
+  font-size: 0.9rem;
+}
+
+.interaction-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.field-label {
+  font-weight: 500;
+  color: #27425b;
+}
+
+.field-group {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.field-group input[type="text"] {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  border: 1px solid #c9d7e6;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border 0.2s ease, box-shadow 0.2s ease;
+}
+
+.field-group input[type="text"]:focus {
+  outline: none;
+  border-color: #1e88e5;
+  box-shadow: 0 0 0 3px rgba(30, 136, 229, 0.25);
+}
+
+.primary-button,
+.secondary-button {
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.primary-button {
+  background: #1e88e5;
+  color: #ffffff;
+  box-shadow: 0 6px 14px rgba(30, 136, 229, 0.3);
+}
+
+.primary-button:hover,
+.secondary-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px rgba(31, 45, 61, 0.18);
+}
+
+.primary-button:disabled,
+.secondary-button:disabled {
+  background: #c7d4e2;
+  color: #7289a7;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.secondary-button {
+  background: #ffffff;
+  color: #1e88e5;
+  border: 1px solid #1e88e5;
+}
+
+.action-row {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.feedback {
+  min-height: 1.5rem;
+  font-weight: 500;
+  color: #1f2d3d;
+}
+
+.feedback.success {
+  color: #1b5e20;
+}
+
+.feedback.error {
+  color: #b71c1c;
+}
+
+.hint-output {
+  min-height: 1.5rem;
+  color: #0056a3;
+  font-weight: 500;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.app-footer {
+  padding: 1.5rem;
+  text-align: center;
+  color: #4d6478;
+  font-size: 0.95rem;
+}
+
+@media (max-width: 720px) {
+  .app-main {
+    gap: 1.5rem;
+  }
+
+  .field-group {
+    flex-direction: column;
+  }
+
+  .action-row {
+    flex-direction: column;
+  }
+
+  .primary-button,
+  .secondary-button {
+    width: 100%;
+  }
+}

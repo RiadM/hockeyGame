@@ -1,0 +1,301 @@
+{
+  "players": [
+    {
+      "name": "Noah Laba",
+      "position": "C",
+      "shoots": "R",
+      "birth": {"date": "2003-08-04", "place": "Northville, MI", "age": 22},
+      "size": {"height_in": "6.03", "weight_lb": 214, "height_cm": 191, "weight_kg": 97},
+      "draft": {"team": "New York Rangers", "round": 4, "overall": 111, "year": 2022},
+      "regular_season": [
+        {"season": "2020-21", "team": "Lincoln Stars", "league": "USHL", "gp": 46, "g": 9, "a": 10, "pts": 19, "pim": 72, "+/-": -5},
+        {"season": "2021-22", "team": "Lincoln Stars", "league": "USHL", "gp": 50, "g": 15, "a": 24, "pts": 39, "pim": 115, "+/-": 7},
+        {"season": "2022-23", "team": "Colorado College", "league": "NCHC", "gp": 35, "g": 11, "a": 11, "pts": 22, "pim": 48, "+/-": -18},
+        {"season": "2023-24", "team": "Colorado College", "league": "NCHC", "gp": 36, "g": 20, "a": 17, "pts": 37, "pim": 27, "+/-": 20},
+        {"season": "2024-25", "team": "Colorado College", "league": "NCHC", "gp": 29, "g": 10, "a": 16, "pts": 26, "pim": 25, "+/-": 10},
+        {"season": "2024-25", "team": "Hartford Wolf Pack", "league": "AHL", "gp": 11, "g": 3, "a": 2, "pts": 5, "pim": 6, "+/-": -2},
+        {"season": "2025-26", "team": "New York Rangers", "league": "NHL", "gp": 14, "g": 2, "a": 2, "pts": 4, "pim": 4, "+/-": 2}
+      ],
+      "playoffs": [
+        {"season": "2021-22", "team": "Lincoln Stars", "league": "USHL", "gp": 1, "g": 1, "a": 0, "pts": 1, "pim": 2}
+      ],
+      "totals": {"nhl": {"gp": 14, "g": 2, "a": 2, "pts": 4, "pim": 4}}
+    },
+    {
+      "name": "Tomas Holmstrom",
+      "position": "LW",
+      "shoots": "L",
+      "birth": {"date": "1973-01-23", "place": "Pitea, Sweden", "age": 52},
+      "size": {"height_in": "6.00", "weight_lb": 198, "height_cm": 183, "weight_kg": 90},
+      "draft": {"team": "Detroit Red Wings", "round": 10, "overall": 257, "year": 1994},
+      "regular_season": [
+        {"season": "1992-93", "team": "Pitea HC", "league": "Swe-1", "gp": 32, "g": 17, "a": 15, "pts": 32, "pim": 30},
+        {"season": "1993-94", "team": "Bodens IK", "league": "Swe-1", "stats_unavailable": true},
+        {"season": "1994-95", "team": "Lulea HF", "league": "SEL", "gp": 40, "g": 14, "a": 14, "pts": 28, "pim": 56},
+        {"season": "1995-96", "team": "Lulea HF", "league": "SEL", "gp": 34, "g": 12, "a": 11, "pts": 23, "pim": 78},
+        {"season": "1996-97", "team": "Detroit Red Wings", "league": "NHL", "gp": 47, "g": 6, "a": 3, "pts": 9, "pim": 33, "+/-": -10},
+        {"season": "1996-97", "team": "Adirondack Red Wings", "league": "AHL", "gp": 6, "g": 3, "a": 1, "pts": 4, "pim": 7, "+/-": -1},
+        {"season": "1997-98", "team": "Detroit Red Wings", "league": "NHL", "gp": 57, "g": 5, "a": 17, "pts": 22, "pim": 44, "+/-": 6},
+        {"season": "1998-99", "team": "Detroit Red Wings", "league": "NHL", "gp": 82, "g": 13, "a": 21, "pts": 34, "pim": 69, "+/-": -11},
+        {"season": "1999-00", "team": "Detroit Red Wings", "league": "NHL", "gp": 72, "g": 13, "a": 22, "pts": 35, "pim": 43, "+/-": 4},
+        {"season": "2000-01", "team": "Detroit Red Wings", "league": "NHL", "gp": 73, "g": 16, "a": 24, "pts": 40, "pim": 40, "+/-": -12},
+        {"season": "2001-02", "team": "Detroit Red Wings", "league": "NHL", "gp": 69, "g": 8, "a": 18, "pts": 26, "pim": 58, "+/-": -12},
+        {"season": "2002-03", "team": "Detroit Red Wings", "league": "NHL", "gp": 74, "g": 20, "a": 20, "pts": 40, "pim": 62, "+/-": 11},
+        {"season": "2003-04", "team": "Detroit Red Wings", "league": "NHL", "gp": 67, "g": 15, "a": 15, "pts": 30, "pim": 38, "+/-": 8},
+        {"season": "2004-05", "team": "Lulea HF", "league": "SEL", "gp": 47, "g": 14, "a": 16, "pts": 30, "pim": 50, "+/-": -10},
+        {"season": "2005-06", "team": "Detroit Red Wings", "league": "NHL", "gp": 81, "g": 29, "a": 30, "pts": 59, "pim": 66, "+/-": 14},
+        {"season": "2006-07", "team": "Detroit Red Wings", "league": "NHL", "gp": 77, "g": 30, "a": 22, "pts": 52, "pim": 58, "+/-": 13},
+        {"season": "2007-08", "team": "Detroit Red Wings", "league": "NHL", "gp": 59, "g": 20, "a": 20, "pts": 40, "pim": 58, "+/-": 9},
+        {"season": "2008-09", "team": "Detroit Red Wings", "league": "NHL", "gp": 53, "g": 14, "a": 23, "pts": 37, "pim": 38, "+/-": 18},
+        {"season": "2009-10", "team": "Detroit Red Wings", "league": "NHL", "gp": 68, "g": 25, "a": 20, "pts": 45, "pim": 60, "+/-": 5},
+        {"season": "2010-11", "team": "Detroit Red Wings", "league": "NHL", "gp": 73, "g": 18, "a": 19, "pts": 37, "pim": 62, "+/-": -6},
+        {"season": "2011-12", "team": "Detroit Red Wings", "league": "NHL", "gp": 74, "g": 11, "a": 13, "pts": 24, "pim": 40, "+/-": -9}
+      ],
+      "playoffs": [
+        {"season": "1994-95", "team": "Lulea HF", "league": "SEL", "gp": 8, "g": 1, "a": 2, "pts": 3, "pim": 20},
+        {"season": "1995-96", "team": "Lulea HF", "league": "SEL", "gp": 11, "g": 6, "a": 2, "pts": 8, "pim": 22},
+        {"season": "1996-97", "team": "Detroit Red Wings", "league": "NHL", "gp": 1, "g": 0, "a": 0, "pts": 0, "pim": 0},
+        {"season": "1997-98", "team": "Detroit Red Wings", "league": "NHL", "gp": 22, "g": 7, "a": 12, "pts": 19, "pim": 16},
+        {"season": "1998-99", "team": "Detroit Red Wings", "league": "NHL", "gp": 10, "g": 4, "a": 3, "pts": 7, "pim": 4},
+        {"season": "1999-00", "team": "Detroit Red Wings", "league": "NHL", "gp": 9, "g": 3, "a": 1, "pts": 4, "pim": 16},
+        {"season": "2000-01", "team": "Detroit Red Wings", "league": "NHL", "gp": 6, "g": 1, "a": 3, "pts": 4, "pim": 8},
+        {"season": "2001-02", "team": "Detroit Red Wings", "league": "NHL", "gp": 23, "g": 8, "a": 3, "pts": 11, "pim": 8},
+        {"season": "2002-03", "team": "Detroit Red Wings", "league": "NHL", "gp": 4, "g": 1, "a": 1, "pts": 2, "pim": 4},
+        {"season": "2003-04", "team": "Detroit Red Wings", "league": "NHL", "gp": 12, "g": 2, "a": 2, "pts": 4, "pim": 10},
+        {"season": "2004-05", "team": "Lulea HF", "league": "SEL", "gp": 4, "g": 0, "a": 0, "pts": 0, "pim": 18},
+        {"season": "2005-06", "team": "Detroit Red Wings", "league": "NHL", "gp": 6, "g": 1, "a": 2, "pts": 3, "pim": 12},
+        {"season": "2006-07", "team": "Detroit Red Wings", "league": "NHL", "gp": 15, "g": 5, "a": 3, "pts": 8, "pim": 14},
+        {"season": "2007-08", "team": "Detroit Red Wings", "league": "NHL", "gp": 21, "g": 4, "a": 8, "pts": 12, "pim": 26},
+        {"season": "2008-09", "team": "Detroit Red Wings", "league": "NHL", "gp": 23, "g": 2, "a": 5, "pts": 7, "pim": 22},
+        {"season": "2009-10", "team": "Detroit Red Wings", "league": "NHL", "gp": 12, "g": 4, "a": 3, "pts": 7, "pim": 12},
+        {"season": "2010-11", "team": "Detroit Red Wings", "league": "NHL", "gp": 11, "g": 3, "a": 4, "pts": 7, "pim": 8},
+        {"season": "2011-12", "team": "Detroit Red Wings", "league": "NHL", "gp": 5, "g": 1, "a": 1, "pts": 2, "pim": 2}
+      ],
+      "totals": {
+        "nhl": {"gp": 1026, "g": 243, "a": 287, "pts": 530, "pim": 769},
+        "nhl_playoffs": {"gp": 180, "g": 46, "a": 51, "pts": 97, "pim": 162}
+      }
+    },
+    {
+      "name": "Mickey Redmond",
+      "position": "RW",
+      "shoots": "R",
+      "birth": {"date": "1947-12-27", "place": "Kirkland Lake, ONT", "age": 77},
+      "size": {"height_in": "5.11", "weight_lb": 170, "height_cm": 180, "weight_kg": 77},
+      "regular_season": [
+        {"season": "1963-64", "team": "Peterborough Petes", "league": "OHA", "gp": 53, "g": 21, "a": 17, "pts": 38, "pim": 0},
+        {"season": "1964-65", "team": "Peterborough Petes", "league": "OHA", "gp": 52, "g": 23, "a": 20, "pts": 43, "pim": 0},
+        {"season": "1965-66", "team": "Peterborough Petes", "league": "OHA", "gp": 48, "g": 41, "a": 51, "pts": 92, "pim": 31},
+        {"season": "1966-67", "team": "Peterborough Petes", "league": "OHA", "gp": 48, "g": 51, "a": 44, "pts": 95, "pim": 44},
+        {"season": "1966-67", "team": "Houston Apollos", "league": "CPHL", "playoffs_only": true, "gp": 5, "g": 3, "a": 2, "pts": 5, "pim": 2},
+        {"season": "1967-68", "team": "Montreal Canadiens", "league": "NHL", "gp": 41, "g": 6, "a": 5, "pts": 11, "pim": 4, "+/-": 2},
+        {"season": "1967-68", "team": "Houston Apollos", "league": "CPHL", "gp": 15, "g": 9, "a": 8, "pts": 17, "pim": 9},
+        {"season": "1968-69", "team": "Montreal Canadiens", "league": "NHL", "gp": 65, "g": 9, "a": 15, "pts": 24, "pim": 12},
+        {"season": "1969-70", "team": "Montreal Canadiens", "league": "NHL", "gp": 75, "g": 27, "a": 27, "pts": 54, "pim": 61},
+        {"season": "1970-71", "team": "Montreal Canadiens", "league": "NHL", "gp": 40, "g": 14, "a": 16, "pts": 30, "pim": 35, "+/-": 9},
+        {"season": "1970-71", "team": "Detroit Red Wings", "league": "NHL", "gp": 21, "g": 6, "a": 7, "pts": 13, "pim": 7, "+/-": -2},
+        {"season": "1971-72", "team": "Detroit Red Wings", "league": "NHL", "gp": 78, "g": 42, "a": 29, "pts": 71, "pim": 34, "+/-": -15},
+        {"season": "1972-73", "team": "Detroit Red Wings", "league": "NHL", "gp": 76, "g": 52, "a": 41, "pts": 93, "pim": 24, "+/-": 6},
+        {"season": "1973-74", "team": "Detroit Red Wings", "league": "NHL", "gp": 76, "g": 51, "a": 26, "pts": 77, "pim": 14, "+/-": -20},
+        {"season": "1974-75", "team": "Detroit Red Wings", "league": "NHL", "gp": 29, "g": 15, "a": 12, "pts": 27, "pim": 18, "+/-": -12},
+        {"season": "1975-76", "team": "Detroit Red Wings", "league": "NHL", "gp": 37, "g": 11, "a": 17, "pts": 28, "pim": 10, "+/-": -17}
+      ],
+      "playoffs": [
+        {"season": "1967-68", "team": "Montreal Canadiens", "league": "NHL", "gp": 2, "g": 0, "a": 0, "pts": 0, "pim": 0}
+      ],
+      "totals": {"nhl": {"gp": 538, "g": 233, "a": 195, "pts": 428, "pim": 219}, "nhl_playoffs": {"gp": 16, "g": 2, "a": 3, "pts": 5, "pim": 2}}
+    },
+    {
+      "name": "Ryan O'Reilly",
+      "position": "C",
+      "shoots": "L",
+      "birth": {"date": "1991-02-07", "place": "Clinton, ONT", "age": 34},
+      "size": {"height_in": "6.01", "weight_lb": 207, "height_cm": 185, "weight_kg": 94},
+      "draft": {"team": "Colorado Avalanche", "round": 2, "overall": 33, "year": 2009},
+      "regular_season": [
+        {"season": "2006-07", "team": "Toronto Jr. Canadiens", "league": "OPJHL", "gp": 1, "g": 1, "a": 0, "pts": 1, "pim": 0, "+/-": 0},
+        {"season": "2007-08", "team": "Erie Otters", "league": "OHL", "gp": 61, "g": 19, "a": 33, "pts": 52, "pim": 14, "+/-": -18},
+        {"season": "2008-09", "team": "Erie Otters", "league": "OHL", "gp": 68, "g": 16, "a": 50, "pts": 66, "pim": 26, "+/-": 1},
+        {"season": "2009-10", "team": "Colorado Avalanche", "league": "NHL", "gp": 81, "g": 8, "a": 18, "pts": 26, "pim": 18, "+/-": 4},
+        {"season": "2010-11", "team": "Colorado Avalanche", "league": "NHL", "gp": 74, "g": 13, "a": 13, "pts": 26, "pim": 16, "+/-": -7},
+        {"season": "2011-12", "team": "Colorado Avalanche", "league": "NHL", "gp": 81, "g": 18, "a": 37, "pts": 55, "pim": 12, "+/-": -1},
+        {"season": "2012-13", "team": "Magnitogorsk Metallurg", "league": "KHL", "gp": 12, "g": 5, "a": 5, "pts": 10, "pim": 2, "+/-": 6},
+        {"season": "2012-13", "team": "Colorado Avalanche", "league": "NHL", "gp": 29, "g": 6, "a": 14, "pts": 20, "pim": 4, "+/-": -3},
+        {"season": "2013-14", "team": "Colorado Avalanche", "league": "NHL", "gp": 80, "g": 28, "a": 36, "pts": 64, "pim": 2, "+/-": -1},
+        {"season": "2014-15", "team": "Colorado Avalanche", "league": "NHL", "gp": 82, "g": 17, "a": 38, "pts": 55, "pim": 12, "+/-": -5},
+        {"season": "2015-16", "team": "Buffalo Sabres", "league": "NHL", "gp": 71, "g": 21, "a": 39, "pts": 60, "pim": 8, "+/-": -16},
+        {"season": "2016-17", "team": "Buffalo Sabres", "league": "NHL", "gp": 72, "g": 20, "a": 35, "pts": 55, "pim": 10, "+/-": -1},
+        {"season": "2017-18", "team": "Buffalo Sabres", "league": "NHL", "gp": 81, "g": 24, "a": 37, "pts": 61, "pim": 2, "+/-": -23},
+        {"season": "2018-19", "team": "St. Louis Blues", "league": "NHL", "gp": 82, "g": 28, "a": 49, "pts": 77, "pim": 12, "+/-": 22},
+        {"season": "2019-20", "team": "St. Louis Blues", "league": "NHL", "gp": 71, "g": 12, "a": 49, "pts": 61, "pim": 10, "+/-": 11},
+        {"season": "2020-21", "team": "St. Louis Blues", "league": "NHL", "gp": 56, "g": 24, "a": 30, "pts": 54, "pim": 18, "+/-": 26},
+        {"season": "2021-22", "team": "St. Louis Blues", "league": "NHL", "gp": 78, "g": 21, "a": 37, "pts": 58, "pim": 12, "+/-": 11},
+        {"season": "2022-23", "team": "St. Louis Blues", "league": "NHL", "gp": 40, "g": 12, "a": 7, "pts": 19, "pim": 10, "+/-": -24},
+        {"season": "2022-23", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 13, "g": 4, "a": 7, "pts": 11, "pim": 6, "+/-": 3},
+        {"season": "2023-24", "team": "Nashville Predators", "league": "NHL", "gp": 82, "g": 26, "a": 43, "pts": 69, "pim": 18, "+/-": 6},
+        {"season": "2024-25", "team": "Nashville Predators", "league": "NHL", "gp": 79, "g": 21, "a": 32, "pts": 53, "pim": 24, "+/-": -23},
+        {"season": "2025-26", "team": "Nashville Predators", "league": "NHL", "gp": 16, "g": 6, "a": 4, "pts": 10, "pim": 0, "+/-": -4}
+      ],
+      "playoffs": [
+        {"season": "2008-09", "team": "Erie Otters", "league": "OHL", "gp": 5, "g": 0, "a": 5, "pts": 5, "pim": 2},
+        {"season": "2013-14", "team": "Colorado Avalanche", "league": "NHL", "gp": 7, "g": 2, "a": 4, "pts": 6, "pim": 0},
+        {"season": "2018-19", "team": "St. Louis Blues", "league": "NHL", "gp": 26, "g": 8, "a": 15, "pts": 23, "pim": 4},
+        {"season": "2019-20", "team": "St. Louis Blues", "league": "NHL", "gp": 9, "g": 4, "a": 7, "pts": 11, "pim": 0},
+        {"season": "2020-21", "team": "St. Louis Blues", "league": "NHL", "gp": 4, "g": 0, "a": 3, "pts": 3, "pim": 2},
+        {"season": "2021-22", "team": "St. Louis Blues", "league": "NHL", "gp": 12, "g": 7, "a": 5, "pts": 12, "pim": 2},
+        {"season": "2022-23", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 11, "g": 3, "a": 6, "pts": 9, "pim": 5},
+        {"season": "2023-24", "team": "Nashville Predators", "league": "NHL", "gp": 6, "g": 1, "a": 1, "pts": 2, "pim": 0}
+      ],
+      "awards": [
+        {"year": "2013-14", "league": "NHL", "award": "Lady Byng Memorial Trophy"},
+        {"year": "2018-19", "league": "NHL", "award": "Frank J. Selke Trophy"},
+        {"year": "2018-19", "league": "NHL", "award": "Conn Smythe Trophy"}
+      ],
+      "totals": {"nhl": {"gp": 1168, "g": 309, "a": 525, "pts": 834, "pim": 194}, "nhl_playoffs": {"gp": 81, "g": 26, "a": 41, "pts": 67, "pim": 15}}
+    },
+    {
+      "name": "Gavin McKenna",
+      "position": "LW",
+      "shoots": "L",
+      "birth": {"date": "2007-12-20", "place": "Whitehorse, YT", "age": 17},
+      "size": {"height_in": "6.00", "weight_lb": 165, "height_cm": 183, "weight_kg": 75},
+      "regular_season": [
+        {"season": "2022-23", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 16, "g": 4, "a": 14, "pts": 18, "pim": 0, "+/-": 7},
+        {"season": "2023-24", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 61, "g": 34, "a": 63, "pts": 97, "pim": 21, "+/-": -4},
+        {"season": "2024-25", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 56, "g": 41, "a": 88, "pts": 129, "pim": 19, "+/-": 60},
+        {"season": "2025-26", "team": "Pennsylvania State U", "league": "Big-10", "gp": 10, "g": 3, "a": 10, "pts": 13, "pim": 2, "+/-": 4}
+      ],
+      "playoffs": [
+        {"season": "2022-23", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 4, "g": 1, "a": 0, "pts": 1, "pim": 0},
+        {"season": "2023-24", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 5, "g": 2, "a": 4, "pts": 6, "pim": 2},
+        {"season": "2024-25", "team": "Medicine Hat Tigers", "league": "WHL", "gp": 16, "g": 9, "a": 29, "pts": 38, "pim": 6}
+      ],
+      "tournaments": [
+        {"year": 2025, "tournament": "World Junior U-20 Championships", "team": "Canada U-20", "gp": 5, "g": 1, "a": 0, "pts": 1, "pim": 10, "+/-": -1}
+      ]
+    },
+    {
+      "name": "Logan Mailloux",
+      "position": "D",
+      "shoots": "R",
+      "birth": {"date": "2003-04-15", "place": "Belle River, ONT", "age": 22},
+      "size": {"height_in": "6.03", "weight_lb": 212, "height_cm": 191, "weight_kg": 96},
+      "draft": {"team": "Montreal Canadiens", "round": 1, "overall": 31, "year": 2021},
+      "regular_season": [
+        {"season": "2019-20", "team": "London Knights", "league": "OHL", "gp": 4, "g": 0, "a": 0, "pts": 0, "pim": 2, "+/-": -2},
+        {"season": "2019-20", "team": "London Nationals", "league": "GOJHL", "gp": 48, "g": 18, "a": 51, "pts": 69, "pim": 94},
+        {"season": "2021-22", "team": "London Knights", "league": "OHL", "gp": 12, "g": 3, "a": 6, "pts": 9, "pim": 13, "+/-": 7},
+        {"season": "2022-23", "team": "London Knights", "league": "OHL", "gp": 59, "g": 25, "a": 28, "pts": 53, "pim": 77, "+/-": 15},
+        {"season": "2023-24", "team": "Laval Rocket", "league": "AHL", "gp": 72, "g": 14, "a": 33, "pts": 47, "pim": 91, "+/-": -8},
+        {"season": "2023-24", "team": "Montreal Canadiens", "league": "NHL", "gp": 1, "g": 0, "a": 1, "pts": 1, "pim": 0, "+/-": 1},
+        {"season": "2024-25", "team": "Montreal Canadiens", "league": "NHL", "gp": 7, "g": 2, "a": 2, "pts": 4, "pim": 6, "+/-": -5},
+        {"season": "2024-25", "team": "Laval Rocket", "league": "AHL", "gp": 63, "g": 12, "a": 21, "pts": 33, "pim": 74, "+/-": 5},
+        {"season": "2025-26", "team": "St. Louis Blues", "league": "NHL", "gp": 9, "g": 0, "a": 0, "pts": 0, "pim": 4, "+/-": -12}
+      ],
+      "playoffs": [
+        {"season": "2019-20", "team": "London Nationals", "league": "GOJHL", "gp": 5, "g": 2, "a": 2, "pts": 4, "pim": 24},
+        {"season": "2022-23", "team": "London Knights", "league": "OHL", "gp": 21, "g": 8, "a": 16, "pts": 24, "pim": 45},
+        {"season": "2024-25", "team": "Laval Rocket", "league": "AHL", "gp": 13, "g": 2, "a": 4, "pts": 6, "pim": 28}
+      ],
+      "totals": {"nhl": {"gp": 17, "g": 2, "a": 3, "pts": 5, "pim": 10}}
+    },
+    {
+      "name": "Kirby Dach",
+      "position": "C",
+      "shoots": "R",
+      "birth": {"date": "2001-01-21", "place": "Fort Saskatchewan, ALTA", "age": 24},
+      "size": {"height_in": "6.04", "weight_lb": 221, "height_cm": 193, "weight_kg": 100},
+      "draft": {"team": "Chicago Blackhawks", "round": 1, "overall": 3, "year": 2019},
+      "regular_season": [
+        {"season": "2016-17", "team": "Saskatoon Blades", "league": "WHL", "gp": 19, "g": 6, "a": 4, "pts": 10, "pim": 4, "+/-": 3},
+        {"season": "2017-18", "team": "Saskatoon Blades", "league": "WHL", "gp": 52, "g": 7, "a": 39, "pts": 46, "pim": 12, "+/-": -10},
+        {"season": "2018-19", "team": "Saskatoon Blades", "league": "WHL", "gp": 62, "g": 25, "a": 48, "pts": 73, "pim": 40, "+/-": 15},
+        {"season": "2019-20", "team": "Rockford IceHogs", "league": "AHL", "gp": 3, "g": 0, "a": 0, "pts": 0, "pim": 0, "+/-": -1},
+        {"season": "2019-20", "team": "Chicago Blackhawks", "league": "NHL", "gp": 64, "g": 8, "a": 15, "pts": 23, "pim": 24, "+/-": -1},
+        {"season": "2020-21", "team": "Chicago Blackhawks", "league": "NHL", "gp": 18, "g": 2, "a": 8, "pts": 10, "pim": 4, "+/-": -3},
+        {"season": "2021-22", "team": "Chicago Blackhawks", "league": "NHL", "gp": 70, "g": 9, "a": 17, "pts": 26, "pim": 43, "+/-": -18},
+        {"season": "2022-23", "team": "Montreal Canadiens", "league": "NHL", "gp": 58, "g": 14, "a": 24, "pts": 38, "pim": 43, "+/-": -2},
+        {"season": "2023-24", "team": "Montreal Canadiens", "league": "NHL", "gp": 2, "g": 0, "a": 2, "pts": 2, "pim": 0, "+/-": 2},
+        {"season": "2024-25", "team": "Montreal Canadiens", "league": "NHL", "gp": 57, "g": 10, "a": 12, "pts": 22, "pim": 40, "+/-": -29},
+        {"season": "2025-26", "team": "Montreal Canadiens", "league": "NHL", "gp": 11, "g": 4, "a": 2, "pts": 6, "pim": 6, "+/-": 1}
+      ],
+      "playoffs": [
+        {"season": "2018-19", "team": "Saskatoon Blades", "league": "WHL", "gp": 10, "g": 5, "a": 3, "pts": 8, "pim": 6},
+        {"season": "2019-20", "team": "Chicago Blackhawks", "league": "NHL", "gp": 9, "g": 1, "a": 5, "pts": 6, "pim": 4}
+      ],
+      "totals": {"nhl": {"gp": 280, "g": 47, "a": 80, "pts": 127, "pim": 160}, "nhl_playoffs": {"gp": 9, "g": 1, "a": 5, "pts": 6, "pim": 4}}
+    },
+    {
+      "name": "Nazem Kadri",
+      "position": "C",
+      "shoots": "L",
+      "birth": {"date": "1990-10-06", "place": "London, ONT", "age": 35},
+      "size": {"height_in": "6.00", "weight_lb": 185, "height_cm": 183, "weight_kg": 84},
+      "draft": {"team": "Toronto Maple Leafs", "round": 1, "overall": 7, "year": 2009},
+      "regular_season": [
+        {"season": "2006-07", "team": "Kitchener Rangers", "league": "OHL", "gp": 62, "g": 7, "a": 15, "pts": 22, "pim": 30, "+/-": 11},
+        {"season": "2007-08", "team": "Kitchener Rangers", "league": "OHL", "gp": 68, "g": 25, "a": 40, "pts": 65, "pim": 57, "+/-": 9},
+        {"season": "2008-09", "team": "London Knights", "league": "OHL", "gp": 56, "g": 25, "a": 53, "pts": 78, "pim": 31, "+/-": 13},
+        {"season": "2009-10", "team": "London Knights", "league": "OHL", "gp": 56, "g": 35, "a": 58, "pts": 93, "pim": 105, "+/-": 26},
+        {"season": "2009-10", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 1, "g": 0, "a": 0, "pts": 0, "pim": 0, "+/-": -1},
+        {"season": "2010-11", "team": "Toronto Marlies", "league": "AHL", "gp": 44, "g": 17, "a": 24, "pts": 41, "pim": 62, "+/-": 2},
+        {"season": "2010-11", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 29, "g": 3, "a": 9, "pts": 12, "pim": 8, "+/-": -3},
+        {"season": "2011-12", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 21, "g": 5, "a": 2, "pts": 7, "pim": 8, "+/-": 2},
+        {"season": "2011-12", "team": "Toronto Marlies", "league": "AHL", "gp": 48, "g": 18, "a": 22, "pts": 40, "pim": 39, "+/-": 2},
+        {"season": "2012-13", "team": "Toronto Marlies", "league": "AHL", "gp": 27, "g": 8, "a": 18, "pts": 26, "pim": 26, "+/-": 5},
+        {"season": "2012-13", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 48, "g": 18, "a": 26, "pts": 44, "pim": 23, "+/-": 15},
+        {"season": "2013-14", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 78, "g": 20, "a": 30, "pts": 50, "pim": 67, "+/-": -11},
+        {"season": "2014-15", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 73, "g": 18, "a": 21, "pts": 39, "pim": 28, "+/-": -7},
+        {"season": "2015-16", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 76, "g": 17, "a": 28, "pts": 45, "pim": 73, "+/-": -15},
+        {"season": "2016-17", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 82, "g": 32, "a": 29, "pts": 61, "pim": 95, "+/-": -7},
+        {"season": "2017-18", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 80, "g": 32, "a": 23, "pts": 55, "pim": 42, "+/-": 2},
+        {"season": "2018-19", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 73, "g": 16, "a": 28, "pts": 44, "pim": 43, "+/-": -2},
+        {"season": "2019-20", "team": "Colorado Avalanche", "league": "NHL", "gp": 51, "g": 19, "a": 17, "pts": 36, "pim": 97, "+/-": 7},
+        {"season": "2020-21", "team": "Colorado Avalanche", "league": "NHL", "gp": 56, "g": 11, "a": 21, "pts": 32, "pim": 34, "+/-": -7},
+        {"season": "2021-22", "team": "Colorado Avalanche", "league": "NHL", "gp": 71, "g": 28, "a": 59, "pts": 87, "pim": 71, "+/-": 13},
+        {"season": "2022-23", "team": "Calgary Flames", "league": "NHL", "gp": 82, "g": 24, "a": 32, "pts": 56, "pim": 56, "+/-": -19},
+        {"season": "2023-24", "team": "Calgary Flames", "league": "NHL", "gp": 82, "g": 29, "a": 46, "pts": 75, "pim": 43, "+/-": 0},
+        {"season": "2024-25", "team": "Calgary Flames", "league": "NHL", "gp": 82, "g": 35, "a": 32, "pts": 67, "pim": 72, "+/-": -17},
+        {"season": "2025-26", "team": "Calgary Flames", "league": "NHL", "gp": 15, "g": 4, "a": 7, "pts": 11, "pim": 8, "+/-": -6}
+      ],
+      "playoffs": [
+        {"season": "2006-07", "team": "Kitchener Rangers", "league": "OHL", "gp": 9, "g": 0, "a": 2, "pts": 2, "pim": 4},
+        {"season": "2007-08", "team": "Kitchener Rangers", "league": "OHL", "gp": 20, "g": 9, "a": 17, "pts": 26, "pim": 26},
+        {"season": "2008-09", "team": "London Knights", "league": "OHL", "gp": 14, "g": 9, "a": 12, "pts": 21, "pim": 22},
+        {"season": "2009-10", "team": "London Knights", "league": "OHL", "gp": 12, "g": 9, "a": 18, "pts": 27, "pim": 26},
+        {"season": "2016-17", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 6, "g": 1, "a": 1, "pts": 2, "pim": 8},
+        {"season": "2017-18", "team": "Toronto Maple Leafs", "league": "NHL", "gp": 4, "g": 0, "a": 2, "pts": 2, "pim": 19},
+        {"season": "2018-19", "team": "Colorado Avalanche", "league": "NHL", "gp": 15, "g": 9, "a": 9, "pts": 18, "pim": 10},
+        {"season": "2020-21", "team": "Colorado Avalanche", "league": "NHL", "gp": 2, "g": 0, "a": 1, "pts": 1, "pim": 10}
+      ],
+      "tournaments": [
+        {"year": 2010, "tournament": "World Junior U-20 Championships", "team": "Canada U-20", "gp": 6, "g": 3, "a": 5, "pts": 8, "pim": 14, "+/-": 1}
+      ],
+      "totals": {"nhl": {"gp": 1000, "g": 311, "a": 410, "pts": 721, "pim": 768}, "nhl_playoffs": {"gp": 52, "g": 19, "a": 25, "pts": 44, "pim": 84}}
+    },
+    {
+      "name": "Jacob Fowler",
+      "position": "G",
+      "shoots": "L",
+      "birth": {"date": "2004-11-24", "place": "Melbourne, FL", "age": 20},
+      "size": {"height_in": "6.02", "weight_lb": 213, "height_cm": 188, "weight_kg": 97},
+      "draft": {"team": "Montreal Canadiens", "round": 3, "overall": 69, "year": 2023},
+      "goalie_regular_season": [
+        {"season": "2021-22", "team": "Youngstown Phantoms", "league": "USHL", "gp": 18, "a": 0, "pim": 0, "min": 963, "ga": 35, "en": 2, "so": 2, "gaa": 2.18, "w": 11, "l": 4, "t": 1, "svs": 442, "pct": 0.927},
+        {"season": "2022-23", "team": "Youngstown Phantoms", "league": "USHL", "gp": 40, "a": 4, "pim": 2, "min": 2318, "ga": 88, "en": 4, "so": 5, "gaa": 2.28, "w": 27, "l": 9, "t": 4, "svs": 1029, "pct": 0.921},
+        {"season": "2023-24", "team": "Boston College", "league": "H-East", "gp": 39, "a": 2, "pim": 0, "min": 2327, "ga": 83, "en": 0, "so": 3, "gaa": 2.14, "w": 32, "l": 6, "t": 1, "svs": 103, "pct": 0.926},
+        {"season": "2024-25", "team": "Boston College", "league": "H-East", "gp": 35, "a": 2, "pim": 17, "min": 2063, "ga": 56, "en": 0, "so": 7, "gaa": 1.63, "w": 25, "l": 7, "t": 2, "svs": 875, "pct": 0.940},
+        {"season": "2024-25", "team": "Laval Rocket", "league": "AHL", "gp": 3, "a": 0, "pim": 0, "min": 181, "ga": 7, "en": 0, "so": 0, "gaa": 2.32, "w": 2, "l": 1, "t": 0, "svs": 74, "pct": 0.914},
+        {"season": "2025-26", "team": "Laval Rocket", "league": "AHL", "gp": 6, "a": 0, "pim": 0, "min": 359, "ga": 14, "en": 0, "so": 2, "gaa": 2.34, "w": 4, "l": 2, "t": 0, "svs": 146, "pct": 0.913}
+      ],
+      "goalie_playoffs": [
+        {"season": "2021-22", "team": "Youngstown Phantoms", "league": "USHL", "gp": 1},
+        {"season": "2022-23", "team": "Youngstown Phantoms", "league": "USHL", "gp": 9},
+        {"season": "2024-25", "team": "Laval Rocket", "league": "AHL", "gp": 8}
+      ],
+      "tournaments": [
+        {"year": 2024, "tournament": "World Junior U-20 Championships", "team": "USA U-20", "gp": 7, "g": 0, "a": 0, "pts": 0, "pim": 0, "+/-": 0}
+      ]
+    }
+  ]
+}
