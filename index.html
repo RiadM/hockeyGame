@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hockey Guess</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="top-bar">
+      <div class="logo-area">
+        <h1>Hockey Guess</h1>
+        <p class="tagline">Spend tokens, reveal stats, name the player.</p>
+      </div>
+      <div class="token-area">
+        <span class="token-label">Tokens</span>
+        <span id="token-count" class="token-count">0</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="identity-card">
+        <h2>Mystery Player</h2>
+        <dl class="bio-list" id="bio-list"></dl>
+        <div class="identity-reveal">
+          <button class="reveal-button" data-section="identity" data-cost="3">
+            Reveal Identity (3 tokens)
+          </button>
+          <p id="identity-reveal" class="identity-reveal-text"></p>
+        </div>
+      </section>
+
+      <section class="stats-board">
+        <div class="board-left">
+          <section class="stats-section" data-section="regularSeason">
+            <div class="section-header">
+              <h3>Regular Season</h3>
+              <button class="reveal-button" data-section="regularSeason" data-cost="1">
+                Reveal Regular Season (1 token)
+              </button>
+            </div>
+            <table class="hdb-table">
+              <thead>
+                <tr id="regularSeason-head"></tr>
+              </thead>
+              <tbody id="regularSeason-body"></tbody>
+              <tfoot id="regularSeason-foot"></tfoot>
+            </table>
+          </section>
+
+          <section class="stats-section" data-section="playoffs">
+            <div class="section-header">
+              <h3>Playoffs</h3>
+              <button class="reveal-button" data-section="playoffs" data-cost="1">
+                Reveal Playoffs (1 token)
+              </button>
+            </div>
+            <table class="hdb-table">
+              <thead>
+                <tr id="playoffs-head"></tr>
+              </thead>
+              <tbody id="playoffs-body"></tbody>
+              <tfoot id="playoffs-foot"></tfoot>
+            </table>
+          </section>
+
+          <section class="stats-section" data-section="tournaments">
+            <div class="section-header">
+              <h3>International</h3>
+              <button class="reveal-button" data-section="tournaments" data-cost="1">
+                Reveal International (1 token)
+              </button>
+            </div>
+            <table class="hdb-table">
+              <thead>
+                <tr id="tournaments-head"></tr>
+              </thead>
+              <tbody id="tournaments-body"></tbody>
+            </table>
+          </section>
+        </div>
+
+        <aside class="board-right">
+          <section class="stats-section" data-section="awards">
+            <div class="section-header">
+              <h3>Awards</h3>
+              <button class="reveal-button" data-section="awards" data-cost="1">
+                Reveal Awards (1 token)
+              </button>
+            </div>
+            <ul id="awards-list" class="awards-list"></ul>
+          </section>
+
+          <section class="stats-section" data-section="totals">
+            <div class="section-header">
+              <h3>Career Totals</h3>
+              <button class="reveal-button" data-section="totals" data-cost="1">
+                Reveal Totals (1 token)
+              </button>
+            </div>
+            <table class="hdb-table">
+              <thead>
+                <tr id="totals-head"></tr>
+              </thead>
+              <tbody id="totals-body"></tbody>
+            </table>
+          </section>
+
+          <section class="stats-card">
+            <h3>Game Stats</h3>
+            <table class="summary-table">
+              <tbody>
+                <tr>
+                  <th scope="row">Rounds Played</th>
+                  <td id="stat-rounds">0</td>
+                </tr>
+                <tr>
+                  <th scope="row">Wins</th>
+                  <td id="stat-wins">0</td>
+                </tr>
+                <tr>
+                  <th scope="row">Current Streak</th>
+                  <td id="stat-current-streak">0</td>
+                </tr>
+                <tr>
+                  <th scope="row">Best Streak</th>
+                  <td id="stat-best-streak">0</td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        </aside>
+      </section>
+
+      <section class="interaction-panel">
+        <form id="guess-form" class="guess-form" autocomplete="off">
+          <label for="guess-input">Enter a player's name:</label>
+          <div class="guess-input-group">
+            <input
+              id="guess-input"
+              name="guess"
+              type="text"
+              placeholder="Wayne Gretzky"
+              list="guess-options"
+              required
+            />
+            <datalist id="guess-options"></datalist>
+            <button type="submit">Submit Guess</button>
+          </div>
+        </form>
+        <div class="feedback" id="feedback"></div>
+        <div class="round-controls">
+          <button id="next-round" class="next-round" type="button">Start Next Round</button>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <p>Data sourced from the bundled HockeyDB-style JSON for demo purposes.</p>
+    </footer>
+
+    <script src="main.js" defer></script>
+  </body>
+</html>
