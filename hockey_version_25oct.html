@@ -3,284 +3,1716 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hockey Player Statistics</title>
+    <title>Hockey Stats Game - Dashboard Analytics</title>
     <style>
-        :root {
-            --primary-color: #3498db;
-            --secondary-color: #2ecc71;
-            --background-color: #ecf0f1;
-            --text-color: #34495e;
-            --border-color: #bdc3c7;
-            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            --transition: all 0.3s ease;
-        }
-
-        body, html {
+        * {
             margin: 0;
             padding: 0;
-            height: 100%;
-            font-family: 'Arial', sans-serif;
-            background-color: var(--background-color);
-            color: var(--text-color);
+            box-sizing: border-box;
         }
 
-        .container {
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            box-shadow: var(--box-shadow);
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f1f5f9;
+            color: #334155;
+            overflow: hidden;
+            height: 100vh;
         }
 
-        header {
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 15% 1fr;
+            grid-template-rows: 60px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* Top Header - Spans both columns */
+        .dashboard-header {
+            grid-column: 1 / -1;
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            padding: 0 24px;
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            padding: 20px;
-            background-color: var(--primary-color);
-            color: white;
+            justify-content: space-between;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            height: 60px;
         }
 
-        .logo, .score {
-            font-size: 1.5em;
-            font-weight: bold;
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -0.5px;
         }
 
-        .main-content {
+        .header-instructions {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+
+        /* Left Sidebar - Score Dashboard */
+        .score-sidebar {
+            background: #ffffff;
+            border-right: 1px solid #e2e8f0;
+            padding: 30px 20px 20px 20px;
             display: flex;
+            flex-direction: column;
+            gap: 24px;
+            overflow-y: auto;
+        }
+
+        /* Score Card with Progress Bar Visualization */
+        .score-card {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-info-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0891b2;
+            color: #ffffff;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 200ms ease;
+        }
+
+        .score-info-btn:hover {
+            background: #0e7490;
+            transform: scale(1.1);
+        }
+
+        .score-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
+            transition: all 800ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .score-label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 12px;
+        }
+
+        .score-display-container {
+            position: relative;
+        }
+
+        .score-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0891b2;
+            line-height: 1;
+            transition: all 800ms cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .score-max {
+            display: none;
+        }
+
+        /* Progress Bar Visualization */
+        .score-progress-container {
+            margin-top: 12px;
+            position: relative;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .score-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #06b6d4 0%, #0e7490 100%);
+            border-radius: 3px;
+            transition: background 300ms ease;
+        }
+
+        .score-percentage {
+            display: none;
+        }
+
+        /* Score range color transitions */
+        .score-progress-bar.excellent {
+            background: linear-gradient(90deg, #0891b2 0%, #0e7490 100%);
+        }
+
+        .score-progress-bar.good {
+            background: linear-gradient(90deg, #06b6d4 0%, #0891b2 100%);
+        }
+
+        .score-progress-bar.average {
+            background: linear-gradient(90deg, #14b8a6 0%, #0d9488 100%);
+        }
+
+        .score-progress-bar.low {
+            background: linear-gradient(90deg, #64748b 0%, #475569 100%);
+        }
+
+        /* Delta indicator (smooth, non-jumping) */
+        .score-delta {
+            position: absolute;
+            top: -8px;
+            right: 0;
+            font-size: 14px;
+            font-weight: 700;
+            padding: 4px 10px;
+            border-radius: 6px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 300ms ease, transform 300ms ease;
+        }
+
+        .score-delta.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .score-delta.positive {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .score-delta.negative {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        /* Hints Card */
+        .hints-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .hints-card.hidden {
+            display: none;
+        }
+
+        .hints-indicator {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            justify-content: center;
+        }
+
+        .hint-dot {
             flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            transition: background 300ms ease;
         }
 
-        .publicity {
-            width: 20%;
-            padding: 20px;
-            background-color: var(--secondary-color);
-            color: white;
+        .hint-dot.used {
+            background: #94a3b8;
         }
 
-        .game-area {
+        /* Input in Sidebar */
+        .sidebar-input-group {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+        }
+
+        .sidebar-input-group.hidden {
+            display: none;
+        }
+
+        .sidebar-input-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            outline: none;
+            transition: all 300ms ease;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-input-group input:focus {
+            border-color: #0891b2;
+            box-shadow: 0 0 0 3px rgba(8, 145, 178, 0.1);
+        }
+
+        .sidebar-input-group input.correct {
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .sidebar-input-group input.incorrect {
+            border-color: #ef4444;
+            animation: shake 600ms ease;
+        }
+
+        .sidebar-input-group .btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            background: #f8fafc;
+            padding: 24px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             flex: 1;
             display: flex;
             flex-direction: column;
-            padding: 20px;
+            overflow: hidden;
+        }
+
+
+        /* Table Container - Fixed Height with Internal Scroll */
+        .table-wrapper {
+            flex: 1;
+            overflow-y: auto;
             overflow-x: auto;
         }
 
         .stats-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .stats-table th, .stats-table td {
-            border: 1px solid var(--border-color);
-            padding: 10px;
-            text-align: center;
+            font-size: 13px;
         }
 
         .stats-table th {
-            background-color: var(--primary-color);
-            color: white;
+            background: #f8fafc;
+            color: #64748b;
+            font-weight: 600;
+            text-align: center;
+            padding: 10px 4px;
+            border-bottom: 2px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
         }
 
-        .stats-table tr:nth-child(even) {
-            background-color: var(--background-color);
+        .stats-table td {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+            font-weight: 500;
+            font-size: 14px;
         }
 
-        .stats-table .season-col {
-            background-color: var(--primary-color);
-            color: white;
+        /* Season column - Light slate gradient */
+        .stats-table tbody td:nth-child(1) {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            font-weight: 700;
+            border-right: 2px solid #94a3b8;
         }
 
-        .stats-table .team-col {
-            background-color: #2980b9;
-            color: white;
+        /* Team column - Cyan gradient */
+        .stats-table tbody td.team-col {
+            background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+            font-weight: 600;
+            border-right: 2px solid #06b6d4;
         }
 
-        .stats-table .league-col {
-            background-color: #3498db;
-            color: white;
+        /* Regular season columns - Primary cyan gradient */
+        .stats-table tbody td:nth-child(3),
+        .stats-table tbody td:nth-child(4),
+        .stats-table tbody td:nth-child(5),
+        .stats-table tbody td:nth-child(6),
+        .stats-table tbody td:nth-child(7),
+        .stats-table tbody td:nth-child(8) {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
         }
 
-        .stats-table .regular-season {
-            background-color: #f39c12;
-            color: white;
+        .stats-table tbody td:nth-child(8) {
+            border-right: 2px solid #0891b2;
         }
 
-        .stats-table .playoffs {
-            background-color: #e74c3c;
-            color: white;
+        /* Playoff columns - Darker cyan gradient */
+        .stats-table tbody td.playoff-col {
+            background: linear-gradient(135deg, #a5f3fc 0%, #67e8f9 100%);
         }
 
-        .user-input {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: var(--box-shadow);
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
+        .stats-table tbody tr:hover {
+            background: #f8fafc;
         }
 
-        input[type="text"] {
-            flex: 1;
-            min-width: 200px;
-            padding: 10px;
-            border: 1px solid var(--border-color);
-            border-radius: 5px;
-            font-size: 1em;
-            transition: var(--transition);
+        .stats-table tbody tr:nth-child(even) {
+            background: #fefefe;
         }
 
-        input[type="text"]:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.3);
+        .hidden {
+            display: none;
         }
 
-        .buttons {
-            display: flex;
-            gap: 10px;
+        .reveal-animation {
+            animation: reveal 500ms ease;
         }
 
-        button {
-            padding: 10px 20px;
+        @keyframes reveal {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+        }
+
+        .btn {
+            padding: 14px 28px;
             border: none;
-            border-radius: 5px;
-            font-size: 1em;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
             cursor: pointer;
-            transition: var(--transition);
+            transition: all 200ms ease;
+            outline: none;
         }
 
-        button:first-child {
-            background-color: var(--secondary-color);
-            color: white;
+        .btn-primary {
+            background: #0891b2;
+            color: #ffffff;
         }
 
-        button:last-child {
-            background-color: var(--primary-color);
-            color: white;
+        .btn-primary:hover:not(:disabled) {
+            background: #0e7490;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(8, 145, 178, 0.3);
         }
 
-        button:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
+        .btn-hint {
+            background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+            color: #ffffff;
+            border: 2px solid #c2410c;
         }
-        .search-row {
-            display: flex;
+
+        .btn-hint:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
+            border-color: #9a3412;
+            box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Multiple Choice Grid in Sidebar */
+        .player-choices {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 10px;
+        }
+
+        .player-choices.hidden {
+            display: none;
+        }
+
+        /* Restart Card */
+        .restart-card {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: auto;
+        }
+
+        .restart-card .btn {
             width: 100%;
         }
 
-        .hint-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
+        .player-choice-btn {
+            padding: 12px 14px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #334155;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 200ms ease;
+            outline: none;
+            text-align: left;
+        }
+
+        .player-choice-btn:hover:not(:disabled) {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            transform: translateX(2px);
+        }
+
+        .player-choice-btn.correct-answer {
+            background: #d1fae5;
+            border-color: #10b981;
+            color: #065f46;
+        }
+
+        .player-choice-btn.wrong-answer {
+            background: #fee2e2;
+            border-color: #ef4444;
+            color: #991b1b;
+            animation: shake 600ms ease;
+        }
+
+        .player-choice-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Round Counter */
+        .round-counter {
+            background: #ffffff;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px 16px;
+            text-align: center;
+        }
+
+        .round-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .round-value {
+            font-size: 20px;
+            font-weight: 800;
+            color: #0891b2;
+        }
+
+        .round-progress-container {
             margin-top: 10px;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
-                flex-direction: column;
-            }
+        .round-progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #0891b2 0%, #0e7490 100%);
+            border-radius: 3px;
+            transition: width 400ms ease;
+        }
 
-            .publicity {
-                width: 100%;
-                order: 2;
-            }
+        /* Success Modal */
+        .success-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
 
-            .game-area {
-                order: 1;
-            }
+        .success-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .success-modal.hiding {
+            opacity: 0;
+        }
+
+        .success-content {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            border: 3px solid #10b981;
+            border-radius: 16px;
+            padding: 40px 60px;
+            text-align: center;
+            box-shadow: 0 12px 48px rgba(0, 0, 0, 0.3);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .success-modal.show .success-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .success-modal.hiding .success-content {
+            transform: scale(0.95);
+            opacity: 0;
+            transition: all 300ms ease;
+        }
+
+        .success-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #065f46;
+            margin-bottom: 16px;
+        }
+
+        .success-player {
+            font-size: 24px;
+            font-weight: 700;
+            color: #047857;
+            margin-bottom: 12px;
+        }
+
+        .success-score {
+            font-size: 18px;
+            font-weight: 600;
+            color: #059669;
+        }
+
+        /* Final Score Modal */
+        .final-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 3000;
+            opacity: 0;
+            transition: opacity 300ms ease;
+        }
+
+        .final-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .final-content {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border: 4px solid #0891b2;
+            border-radius: 20px;
+            padding: 40px 50px;
+            text-align: center;
+            box-shadow: 0 16px 64px rgba(0, 0, 0, 0.4);
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+            min-width: 500px;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .final-modal.show .final-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+
+        .final-title {
+            font-size: 36px;
+            font-weight: 900;
+            color: #0c4a6e;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .final-grade {
+            font-size: 56px;
+            font-weight: 900;
+            margin-bottom: 16px;
+        }
+
+        .final-grade.grade-a-plus { color: #10b981; }
+        .final-grade.grade-a { color: #059669; }
+        .final-grade.grade-b { color: #0891b2; }
+        .final-grade.grade-c { color: #f59e0b; }
+        .final-grade.grade-d { color: #f97316; }
+        .final-grade.grade-f { color: #ef4444; }
+
+        .final-scores {
+            margin: 20px 0;
+        }
+
+        .final-score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            margin: 8px 0;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 10px;
+            border: 2px solid rgba(8, 145, 178, 0.3);
+        }
+
+        .final-score-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #0c4a6e;
+        }
+
+        .final-score-value {
+            font-size: 24px;
+            font-weight: 900;
+            color: #0891b2;
+        }
+
+        .final-percentage {
+            font-size: 40px;
+            font-weight: 900;
+            color: #0891b2;
+            margin: 16px 0;
+        }
+
+        .final-breakdown {
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .breakdown-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #0c4a6e;
+            margin-bottom: 12px;
+            text-align: center;
+        }
+
+        .breakdown-list {
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding: 12px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 12px;
+            margin: 4px 0;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .breakdown-player {
+            font-weight: 600;
+            color: #0c4a6e;
+            flex: 1;
+        }
+
+        .breakdown-hints {
+            color: #64748b;
+            font-size: 12px;
+            margin-right: 12px;
+        }
+
+        .breakdown-score {
+            font-weight: 700;
+            color: #0891b2;
+        }
+
+        .breakdown-score.perfect {
+            color: #10b981;
+        }
+
+        #final-new-game-btn {
+            margin-top: 20px;
+            width: 100%;
+            font-size: 16px;
+            padding: 14px;
+        }
+
+        /* Game Info Modal */
+        .game-info-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+
+        .game-info-modal.show {
+            display: flex;
+        }
+
+        .game-info-content {
+            background: #ffffff;
+            border-radius: 12px;
+            padding: 24px;
+            max-width: 400px;
+            width: 90%;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        .game-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .game-info-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #334155;
+        }
+
+        .game-info-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+            line-height: 1;
+        }
+
+        .game-info-close:hover {
+            color: #334155;
+        }
+
+        .game-info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .game-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .game-info-label {
+            color: #64748b;
+            font-weight: 500;
+        }
+
+        .game-info-value {
+            color: #334155;
+            font-weight: 700;
+        }
+
+        /* Message Toast - In Sidebar Area */
+        .message {
+            position: fixed;
+            top: 80px;
+            left: 20px;
+            max-width: calc(15% - 40px);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 13px;
+            opacity: 0;
+            transition: opacity 300ms ease;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .message.show {
+            opacity: 1;
+        }
+
+        .message.success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #10b981;
+        }
+
+        .message.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #ef4444;
+        }
+
+        .message.info {
+            background: #dbeafe;
+            color: #1e40af;
+            border: 1px solid #3b82f6;
+        }
+
+        /* Scrollbar Styling */
+        .table-wrapper::-webkit-scrollbar,
+        .score-sidebar::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-track,
+        .score-sidebar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb,
+        .score-sidebar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+
+        .table-wrapper::-webkit-scrollbar-thumb:hover,
+        .score-sidebar::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="logo">HockeyStats</div>
-            <div class="score">Score: 0</div>
-        </header>
-        <div class="main-content">
-            <!--<div class="publicity">
-                <h2>Featured</h2>
-                <p>Check out our latest player statistics and analysis!</p>
+    <div class="dashboard-container">
+        <!-- Top Header -->
+        <div class="dashboard-header">
+            <div class="header-title">Hockey Stats Analytics</div>
+            <div class="header-instructions">Guess the NHL player from their career statistics</div>
+        </div>
+
+        <!-- Left Sidebar - Score Dashboard -->
+        <div class="score-sidebar">
+            <!-- Round Counter -->
+            <div class="round-counter">
+                <div class="round-label">Round</div>
+                <div class="round-value" id="round-value">1 / 5</div>
+                <div class="round-progress-container">
+                    <div class="round-progress-bar" id="round-progress-bar" style="width: 20%;"></div>
+                </div>
             </div>
-        -->
-            <div class="game-area">
-                <table class="stats-table">
-                    <thead>
-                        <tr>
-                            <th class="season-col">Season</th>
-                            <th class="team-col">Team</th>
-                            <th class="league-col">Lge</th>
-                            <th class="regular-season" colspan="6">Regular Season</th>
-                            <th class="playoffs" colspan="5">Playoffs</th>
-                        </tr>
-                        <tr>
-                            <th></th>
-                            <th></th>
-                            <th></th>
-                            <th>GP</th>
-                            <th>G</th>
-                            <th>A</th>
-                            <th>Pts</th>
-                            <th>PIM</th>
-                            <th>+/-</th>
-                            <th>GP</th>
-                            <th>G</th>
-                            <th>A</th>
-                            <th>Pts</th>
-                            <th>PIM</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2003-04</td>
-                            <td>Rimouski Oceanic</td>
-                            <td>QMJHL</td>
-                            <td>59</td>
-                            <td>33</td>
-                            <td>60</td>
-                            <td>93</td>
-                            <td>74</td>
-                            <td>45</td>
-                            <td>12</td>
-                            <td>7</td>
-                            <td>19</td>
-                            <td>12</td>
-                            <td>6</td>
-                        </tr>
-                        <tr>
-                            <td>2004-05</td>
-                            <td>Rimouski Oceanic</td>
-                            <td>QMJHL</td>
-                            <td>68</td>
-                            <td>52</td>
-                            <td>71</td>
-                            <td>123</td>
-                            <td>85</td>
-                            <td>19</td>
-                            <td>10</td>
-                            <td>5</td>
-                            <td>15</td>
-                            <td>20</td>
-                            <td>4</td>
-                        </tr>
-                    </tbody>
-                </table>
-                <div class="user-input">
-                    <div class="search-row">
-                        <input type="text" placeholder="Enter player name to search...">
-                        <button>Guess</button>
-                    </div>
-                    <div class="hint-row">
-                        <button>Hint</button>
+
+            <!-- Score Card with Progress Bar -->
+            <div class="score-card">
+                <button class="score-info-btn" id="score-info-btn" title="Game Info">i</button>
+                <div class="score-label">Current Score</div>
+                <div class="score-display-container">
+                    <span class="score-value" id="score-value">100</span>
+                    <span class="score-max">/ 160</span>
+                    <div class="score-delta" id="score-delta"></div>
+                </div>
+                <div class="score-progress-container">
+                    <div class="score-progress-bar excellent" id="score-progress">
+                        <span class="score-percentage" id="score-percentage">100%</span>
                     </div>
                 </div>
+            </div>
+
+            <!-- Hints Card -->
+            <div class="hints-card" id="hints-card">
+                <button class="btn btn-hint" id="hint-btn" style="width: 100%;">Hint (-20): Playoffs</button>
+                <div class="hints-indicator">
+                    <div class="hint-dot" id="hint-dot-1"></div>
+                    <div class="hint-dot" id="hint-dot-2"></div>
+                    <div class="hint-dot" id="hint-dot-3"></div>
+                </div>
+            </div>
+
+            <!-- Input Field in Sidebar -->
+            <div class="sidebar-input-group" id="sidebar-input-group">
+                <input type="text" id="player-guess" placeholder="Enter player name..." autocomplete="off">
+                <button class="btn btn-primary" id="guess-btn">Submit Guess</button>
+            </div>
+
+            <!-- Multiple Choice Buttons in Sidebar -->
+            <div class="player-choices hidden" id="player-choices">
+            </div>
+
+            <!-- Spacer to push restart to bottom -->
+            <div style="flex: 1;"></div>
+
+            <!-- Restart Card at Bottom -->
+            <div class="restart-card">
+                <button class="btn btn-primary" id="restart-btn">New Game</button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="main-content">
+            <div class="content-card">
+                <div class="table-wrapper">
+                    <table class="stats-table">
+                        <thead>
+                            <tr class="header-row">
+                                <th class="season-col">Season</th>
+                                <th class="team-col hidden">Team</th>
+                                <th class="regular-season" colspan="6">Regular Season</th>
+                                <th class="playoffs hidden" colspan="5">Playoffs</th>
+                            </tr>
+                            <tr class="subheader-row">
+                                <th></th>
+                                <th class="team-col hidden"></th>
+                                <th>GP</th>
+                                <th>G</th>
+                                <th>A</th>
+                                <th>Pts</th>
+                                <th>PIM</th>
+                                <th>+/-</th>
+                                <th class="playoff-col hidden">GP</th>
+                                <th class="playoff-col hidden">G</th>
+                                <th class="playoff-col hidden">A</th>
+                                <th class="playoff-col hidden">Pts</th>
+                                <th class="playoff-col hidden">PIM</th>
+                            </tr>
+                        </thead>
+                        <tbody id="stats-body">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Success Modal -->
+    <div class="success-modal" id="success-modal">
+        <div class="success-content">
+            <div class="success-title">Correct!</div>
+            <div class="success-player" id="success-player">Player Name</div>
+            <div class="success-score" id="success-score">+50 points</div>
+        </div>
+    </div>
+
+    <!-- Final Score Modal -->
+    <div class="final-modal" id="final-modal">
+        <div class="final-content" id="final-content">
+            <div class="final-title">Game Complete!</div>
+            <div class="final-grade" id="final-grade">A+</div>
+            <div class="final-scores">
+                <div class="final-score-item">
+                    <span class="final-score-label">Your Score</span>
+                    <span class="final-score-value" id="final-your-score">450</span>
+                </div>
+                <div class="final-score-item">
+                    <span class="final-score-label">Maximum Possible</span>
+                    <span class="final-score-value" id="final-max-score">750</span>
+                </div>
+            </div>
+            <div class="final-percentage" id="final-percentage">60%</div>
+            <div class="final-breakdown">
+                <div class="breakdown-title">Round Breakdown</div>
+                <div class="breakdown-list" id="breakdown-list"></div>
+            </div>
+            <button class="btn btn-primary" id="final-new-game-btn">New Game</button>
+        </div>
+    </div>
+
+    <!-- Game Info Modal -->
+    <div class="game-info-modal" id="game-info-modal">
+        <div class="game-info-content">
+            <div class="game-info-header">
+                <div class="game-info-title">Game Info</div>
+                <button class="game-info-close" id="game-info-close">&times;</button>
+            </div>
+            <div class="game-info-item">
+                <span class="game-info-label">Hint Penalty</span>
+                <span class="game-info-value">-20 pts</span>
+            </div>
+            <div class="game-info-item">
+                <span class="game-info-label">Wrong Choice</span>
+                <span class="game-info-value">-10 pts</span>
+            </div>
+            <div class="game-info-item">
+                <span class="game-info-label">Correct Bonus</span>
+                <span class="game-info-value">+50 pts</span>
+            </div>
+            <div class="game-info-item">
+                <span class="game-info-label">Perfect Score</span>
+                <span class="game-info-value">150 pts</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="message" id="game-message"></div>
+
+    <script type="module">
+        import { GAME_CONFIG } from './src/config.js';
+
+        class HockeyGameDashboard {
+            constructor() {
+                this.score = GAME_CONFIG.INITIAL_SCORE;
+                this.roundStartScore = GAME_CONFIG.INITIAL_SCORE;
+                this.maxScore = GAME_CONFIG.INITIAL_SCORE + GAME_CONFIG.CORRECT_BONUS;
+                this.hintsUsed = 0;
+                this.maxHints = GAME_CONFIG.MAX_HINTS;
+                this.hintPenalty = GAME_CONFIG.HINT_PENALTY;
+                this.correctGuessBonus = GAME_CONFIG.CORRECT_BONUS;
+                this.wrongChoicePenalty = 10;
+                this.currentPlayer = null;
+                this.correctAnswer = '';
+                this.gameWon = false;
+                this.multipleChoiceShown = false;
+                this.guessTimestamps = [];
+                this.animatingScore = false;
+                this.playersData = null;
+
+                // 5-round game tracking
+                this.currentRound = 0;
+                this.totalRounds = 5;
+                this.maxPossibleScore = 750; // 5 rounds × 150 pts each
+                this.selectedPlayers = []; // Pre-selected 5 unique players
+                this.roundHistory = []; // Track performance per round
+
+                this.init();
+            }
+
+            async init() {
+                try {
+                    this.scoreValue = document.getElementById('score-value');
+                    this.scoreProgress = document.getElementById('score-progress');
+                    this.scorePercentage = document.getElementById('score-percentage');
+                    this.scoreDelta = document.getElementById('score-delta');
+                    this.playerInput = document.getElementById('player-guess');
+                    this.guessBtn = document.getElementById('guess-btn');
+                    this.hintBtn = document.getElementById('hint-btn');
+                    this.messageEl = document.getElementById('game-message');
+                    this.statsBody = document.getElementById('stats-body');
+                    this.sidebarInputGroup = document.getElementById('sidebar-input-group');
+                    this.hintsCard = document.getElementById('hints-card');
+                    this.playerChoicesContainer = document.getElementById('player-choices');
+                    this.scoreInfoBtn = document.getElementById('score-info-btn');
+                    this.gameInfoModal = document.getElementById('game-info-modal');
+                    this.gameInfoClose = document.getElementById('game-info-close');
+                    this.restartBtn = document.getElementById('restart-btn');
+                    this.successModal = document.getElementById('success-modal');
+                    this.successPlayer = document.getElementById('success-player');
+                    this.successScore = document.getElementById('success-score');
+                    this.roundValue = document.getElementById('round-value');
+                    this.roundProgressBar = document.getElementById('round-progress-bar');
+                    this.finalModal = document.getElementById('final-modal');
+                    this.finalContent = document.getElementById('final-content');
+                    this.finalYourScore = document.getElementById('final-your-score');
+                    this.finalMaxScore = document.getElementById('final-max-score');
+                    this.finalPercentage = document.getElementById('final-percentage');
+                    this.finalGrade = document.getElementById('final-grade');
+                    this.breakdownList = document.getElementById('breakdown-list');
+                    this.finalNewGameBtn = document.getElementById('final-new-game-btn');
+
+                    if (!this.scoreValue || !this.playerInput || !this.statsBody) {
+                        throw new Error('Critical DOM elements missing');
+                    }
+
+                    await this.selectRandomPlayer();
+                    this.populateTable();
+                    this.setupEventListeners();
+
+                    // Initialize to round 1
+                    this.currentRound = 1;
+                    this.updateScoreDisplay(true);
+                    this.updateRoundDisplay();
+                } catch (error) {
+                    this.handleFatalError(error);
+                }
+            }
+
+            handleFatalError(error) {
+                console.error('Game initialization failed:', error);
+                alert('Game initialization failed. Please refresh the page.');
+            }
+
+            async selectRandomPlayer() {
+                try {
+                    if (!this.playersData) {
+                        const { PLAYERS_DATA } = await import('./src/data.js');
+                        this.playersData = PLAYERS_DATA;
+                    }
+
+                    if (!this.playersData || !this.playersData.length) {
+                        throw new Error('No players available');
+                    }
+
+                    // If no players selected yet, pre-select 5 unique players
+                    if (this.selectedPlayers.length === 0) {
+                        this.preSelectPlayers();
+                    }
+
+                    // Use current round index to get player (0-indexed)
+                    const playerIndex = this.currentRound - 1;
+                    if (playerIndex >= 0 && playerIndex < this.selectedPlayers.length) {
+                        this.currentPlayer = this.selectedPlayers[playerIndex];
+                    } else {
+                        // Fallback to random if something goes wrong
+                        const randomIndex = Math.floor(Math.random() * this.playersData.length);
+                        this.currentPlayer = this.playersData[randomIndex];
+                    }
+
+                    this.correctAnswer = this.currentPlayer.name.toLowerCase();
+                } catch (error) {
+                    console.error('Failed to load player data:', error);
+                    throw error;
+                }
+            }
+
+            preSelectPlayers() {
+                // Shuffle all players and pick first 5
+                const shuffled = [...this.playersData].sort(() => Math.random() - 0.5);
+                this.selectedPlayers = shuffled.slice(0, this.totalRounds);
+            }
+
+            createStatsRow(season) {
+                const row = document.createElement('tr');
+                const plusMinus = season.plus_minus !== null && season.plus_minus !== undefined
+                    ? season.plus_minus : '--';
+
+                const cells = [
+                    { value: season.season, className: '' },
+                    { value: season.team, className: 'team-col hidden' },
+                    { value: season.gp, className: '' },
+                    { value: season.g, className: '' },
+                    { value: season.a, className: '' },
+                    { value: season.pts, className: '' },
+                    { value: season.pim, className: '' },
+                    { value: plusMinus, className: '' },
+                    { value: season.playoff_gp || '--', className: 'playoff-col hidden' },
+                    { value: season.playoff_g || '--', className: 'playoff-col hidden' },
+                    { value: season.playoff_a || '--', className: 'playoff-col hidden' },
+                    { value: season.playoff_pts || '--', className: 'playoff-col hidden' },
+                    { value: season.playoff_pim || '--', className: 'playoff-col hidden' }
+                ];
+
+                cells.forEach(({ value, className }) => {
+                    const cell = document.createElement('td');
+                    cell.textContent = value;
+                    if (className) cell.className = className;
+                    row.appendChild(cell);
+                });
+
+                return row;
+            }
+
+            populateTable() {
+                if (!this.currentPlayer) return;
+                const nhlSeasons = this.currentPlayer.seasons.filter(s => s.league === 'NHL');
+                const fragment = document.createDocumentFragment();
+                nhlSeasons.forEach(season => {
+                    fragment.appendChild(this.createStatsRow(season));
+                });
+                this.statsBody.innerHTML = '';
+                this.statsBody.appendChild(fragment);
+            }
+
+            setupEventListeners() {
+                this.guessBtn.addEventListener('click', () => this.handleGuess());
+                this.hintBtn.addEventListener('click', () => this.handleHint());
+                this.playerInput.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.handleGuess();
+                });
+                this.playerInput.addEventListener('input', () => {
+                    this.playerInput.classList.remove('incorrect', 'correct');
+                });
+
+                // Modal handlers
+                this.scoreInfoBtn.addEventListener('click', () => {
+                    this.gameInfoModal.classList.add('show');
+                });
+
+                this.gameInfoClose.addEventListener('click', () => {
+                    this.gameInfoModal.classList.remove('show');
+                });
+
+                this.gameInfoModal.addEventListener('click', (e) => {
+                    if (e.target === this.gameInfoModal) {
+                        this.gameInfoModal.classList.remove('show');
+                    }
+                });
+
+                // Restart button
+                this.restartBtn.addEventListener('click', () => this.resetGame());
+
+                // Final modal New Game button
+                this.finalNewGameBtn.addEventListener('click', () => {
+                    this.finalModal.classList.remove('show');
+                    this.resetGame();
+                });
+            }
+
+            updateRoundDisplay() {
+                this.roundValue.textContent = `${this.currentRound} / ${this.totalRounds}`;
+
+                // Update overall progress bar
+                const progressPercentage = (this.currentRound / this.totalRounds) * 100;
+                this.roundProgressBar.style.width = `${progressPercentage}%`;
+            }
+
+            sanitizeInput(input) {
+                if (!input) return '';
+                return input.trim().toLowerCase()
+                    .replace(GAME_CONFIG.ALLOWED_INPUT_PATTERN, '')
+                    .substring(0, GAME_CONFIG.MAX_INPUT_LENGTH);
+            }
+
+            isRateLimited() {
+                const now = Date.now();
+                this.guessTimestamps = this.guessTimestamps.filter(
+                    t => now - t < GAME_CONFIG.RATE_LIMIT_WINDOW
+                );
+                return this.guessTimestamps.length >= GAME_CONFIG.MAX_GUESSES_PER_WINDOW;
+            }
+
+            handleGuess() {
+                if (this.gameWon) {
+                    this.showMessage('You already won! Refresh to play again.', 'info');
+                    return;
+                }
+
+                if (this.isRateLimited()) {
+                    this.showMessage('Too many guesses. Please wait.', 'error');
+                    return;
+                }
+
+                this.guessTimestamps.push(Date.now());
+                const guess = this.sanitizeInput(this.playerInput.value);
+
+                if (!guess) {
+                    this.showMessage('Please enter a valid player name', 'error');
+                    return;
+                }
+
+                if (guess === this.correctAnswer) {
+                    this.handleCorrectGuess();
+                } else {
+                    this.handleIncorrectGuess();
+                }
+            }
+
+            async handleCorrectGuess() {
+                this.gameWon = true;
+                const delta = this.correctGuessBonus;
+                const newScore = this.score + delta;
+
+                // Track round performance
+                this.roundHistory.push({
+                    round: this.currentRound,
+                    player: this.currentPlayer.name,
+                    startScore: this.roundStartScore,
+                    endScore: newScore,
+                    hintsUsed: this.hintsUsed,
+                    pointsGained: delta
+                });
+
+                this.animateScoreChange(this.score, newScore, delta);
+                this.revealAllColumns();
+
+                // Show success modal with delay to let score animate
+                setTimeout(() => {
+                    this.successPlayer.textContent = this.currentPlayer.name;
+                    const bonusMsg = this.hintsUsed === 0 ? 'Perfect Round! ' : '';
+                    this.successScore.textContent = `${bonusMsg}+${delta} points`;
+                    this.successModal.classList.add('show');
+                }, 400);
+
+                // Wait 1.5 seconds then fade out and check if game is complete
+                setTimeout(async () => {
+                    this.successModal.classList.add('hiding');
+
+                    // Wait for fade out animation
+                    setTimeout(async () => {
+                        this.successModal.classList.remove('show', 'hiding');
+
+                        // Check if we've completed all 5 rounds
+                        if (this.currentRound >= this.totalRounds) {
+                            this.showFinalScore();
+                        } else {
+                            await this.loadNextPlayer();
+                        }
+                    }, 300);
+                }, 1500);
+            }
+
+            async loadNextPlayer() {
+                // Increment round counter
+                this.currentRound++;
+                this.updateRoundDisplay();
+
+                // Reset game state for new player
+                this.gameWon = false;
+                this.hintsUsed = 0;
+                this.multipleChoiceShown = false;
+                this.guessTimestamps = [];
+
+                // Set new round baseline - current score is 100%
+                this.roundStartScore = this.score;
+                this.maxScore = this.score + this.correctGuessBonus;
+
+                // Reset UI
+                this.playerInput.value = '';
+                this.playerInput.classList.remove('correct', 'incorrect');
+                this.playerInput.disabled = false;
+                this.guessBtn.disabled = false;
+                this.hintBtn.disabled = false;
+
+                // Show hints card and input, hide choices
+                this.hintsCard.classList.remove('hidden');
+                this.sidebarInputGroup.classList.remove('hidden');
+                this.playerChoicesContainer.classList.add('hidden');
+
+                // Reset hint dots
+                for (let i = 1; i <= 3; i++) {
+                    const dot = document.getElementById(`hint-dot-${i}`);
+                    if (dot) dot.classList.remove('used');
+                }
+
+                // Reset hint button text
+                this.updateHintButtonText();
+
+                // Load new player
+                await this.selectRandomPlayer();
+                this.populateTable();
+
+                // Hide all columns again
+                document.querySelectorAll('.team-col, .playoffs, .playoff-col').forEach(el => {
+                    el.classList.add('hidden');
+                });
+
+                this.messageEl.classList.remove('show');
+
+                // Update progress bar to show 100% at round start
+                this.updateScoreDisplay();
+            }
+
+            showFinalScore() {
+                // Calculate percentage
+                const percentage = Math.round((this.score / this.maxPossibleScore) * 100);
+
+                // Calculate grade
+                let grade = 'F';
+                let gradeClass = 'grade-f';
+                if (percentage >= 90) {
+                    grade = 'A+';
+                    gradeClass = 'grade-a-plus';
+                } else if (percentage >= 80) {
+                    grade = 'A';
+                    gradeClass = 'grade-a';
+                } else if (percentage >= 70) {
+                    grade = 'B';
+                    gradeClass = 'grade-b';
+                } else if (percentage >= 60) {
+                    grade = 'C';
+                    gradeClass = 'grade-c';
+                } else if (percentage >= 50) {
+                    grade = 'D';
+                    gradeClass = 'grade-d';
+                }
+
+                // Update final modal content
+                this.finalYourScore.textContent = this.score;
+                this.finalMaxScore.textContent = this.maxPossibleScore;
+                this.finalPercentage.textContent = `${percentage}%`;
+                this.finalGrade.textContent = grade;
+                this.finalGrade.className = `final-grade ${gradeClass}`;
+
+                // Populate breakdown
+                this.breakdownList.innerHTML = '';
+                this.roundHistory.forEach(round => {
+                    const item = document.createElement('div');
+                    item.className = 'breakdown-item';
+
+                    const player = document.createElement('div');
+                    player.className = 'breakdown-player';
+                    player.textContent = `${round.round}. ${round.player}`;
+
+                    const hints = document.createElement('div');
+                    hints.className = 'breakdown-hints';
+                    hints.textContent = round.hintsUsed === 0 ? 'Perfect!' : `${round.hintsUsed} hint${round.hintsUsed > 1 ? 's' : ''}`;
+
+                    const score = document.createElement('div');
+                    score.className = round.hintsUsed === 0 ? 'breakdown-score perfect' : 'breakdown-score';
+                    score.textContent = `+${round.pointsGained}`;
+
+                    item.appendChild(player);
+                    item.appendChild(hints);
+                    item.appendChild(score);
+                    this.breakdownList.appendChild(item);
+                });
+
+                // Show final modal
+                setTimeout(() => {
+                    this.finalModal.classList.add('show');
+                }, 500);
+            }
+
+            resetGame() {
+                this.score = GAME_CONFIG.INITIAL_SCORE;
+                this.roundStartScore = GAME_CONFIG.INITIAL_SCORE;
+                this.maxScore = GAME_CONFIG.INITIAL_SCORE + GAME_CONFIG.CORRECT_BONUS;
+                this.currentRound = 0;
+                this.maxPossibleScore = 750;
+                this.roundHistory = [];
+                this.selectedPlayers = [];
+                this.loadNextPlayer();
+            }
+
+            handleIncorrectGuess() {
+                this.playerInput.classList.add('incorrect');
+                setTimeout(() => {
+                    this.playerInput.classList.remove('incorrect');
+                }, GAME_CONFIG.SHAKE_DURATION);
+                this.showMessage('Incorrect! Try again or use a hint.', 'error');
+            }
+
+            async handleHint() {
+                if (this.gameWon) {
+                    this.showMessage('You already won!', 'info');
+                    return;
+                }
+
+                if (this.hintsUsed >= this.maxHints) {
+                    this.showMessage('No more hints available!', 'error');
+                    return;
+                }
+
+                this.hintsUsed++;
+                const delta = -this.hintPenalty;
+                const newScore = this.score - this.hintPenalty;
+
+                // Mark hint as used
+                const hintDot = document.getElementById(`hint-dot-${this.hintsUsed}`);
+                if (hintDot) hintDot.classList.add('used');
+
+                this.animateScoreChange(this.score, newScore, delta);
+
+                if (this.hintsUsed === 1) {
+                    this.revealPlayoffs();
+                    this.showMessage('Playoffs revealed! -20 points', 'info');
+                } else if (this.hintsUsed === 2) {
+                    this.revealTeam();
+                    this.showMessage('Team revealed! -20 points', 'info');
+                } else if (this.hintsUsed === 3) {
+                    await this.showMultipleChoice();
+                    this.showMessage('Choose from 4 players! -20 points', 'info');
+                    this.hintBtn.disabled = true;
+                }
+
+                // Update hint button text for next hint
+                this.updateHintButtonText();
+            }
+
+            updateHintButtonText() {
+                const hintTexts = [
+                    'Hint (-20): Playoffs',
+                    'Hint (-20): Teams',
+                    'Hint (-20): 4 Choices'
+                ];
+
+                if (this.hintsUsed < this.maxHints) {
+                    this.hintBtn.textContent = hintTexts[this.hintsUsed];
+                } else {
+                    this.hintBtn.textContent = 'No Hints Left';
+                }
+            }
+
+            animateScoreChange(fromScore, toScore, delta) {
+                if (this.animatingScore) return;
+
+                this.animatingScore = true;
+                const duration = 800;
+                const startTime = performance.now();
+
+                // Show delta badge
+                this.scoreDelta.textContent = delta > 0 ? `+${delta}` : delta;
+                this.scoreDelta.className = `score-delta ${delta > 0 ? 'positive' : 'negative'} show`;
+
+                const animate = (currentTime) => {
+                    const elapsed = currentTime - startTime;
+                    const progress = Math.min(elapsed / duration, 1);
+
+                    // Easing function for smooth animation
+                    const easeProgress = progress < 0.5
+                        ? 2 * progress * progress
+                        : -1 + (4 - 2 * progress) * progress;
+
+                    const currentScore = Math.round(fromScore + (toScore - fromScore) * easeProgress);
+                    this.score = currentScore;
+                    this.updateScoreDisplay();
+
+                    if (progress < 1) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        this.score = toScore;
+                        this.updateScoreDisplay();
+                        this.animatingScore = false;
+
+                        // Hide delta badge after animation
+                        setTimeout(() => {
+                            this.scoreDelta.classList.remove('show');
+                        }, 1500);
+                    }
+                };
+
+                requestAnimationFrame(animate);
+            }
+
+            updateScoreDisplay(instant = false) {
+                // Progress bar shows: current score / round start score
+                // Start round at 100: bar at 100%
+                // Use hint to 80: bar at 80%
+                // Correct to 130: bar at 130%
+                const percentage = (this.score / this.roundStartScore) * 100;
+
+                // Update score value
+                this.scoreValue.textContent = this.score;
+
+                // Update progress bar width
+                this.scoreProgress.style.width = `${percentage}%`;
+                this.scorePercentage.textContent = `${Math.round(percentage)}%`;
+
+                // Update progress bar color based on percentage
+                this.scoreProgress.classList.remove('excellent', 'good', 'average', 'low');
+                if (percentage >= 100) {
+                    this.scoreProgress.classList.add('excellent');
+                } else if (percentage >= 80) {
+                    this.scoreProgress.classList.add('good');
+                } else if (percentage >= 60) {
+                    this.scoreProgress.classList.add('average');
+                } else {
+                    this.scoreProgress.classList.add('low');
+                }
+            }
+
+            async showMultipleChoice() {
+                // Hide hints card and input group
+                this.hintsCard.classList.add('hidden');
+                this.sidebarInputGroup.classList.add('hidden');
+
+                const choices = await this.generatePlayerChoices();
+                this.playerChoicesContainer.innerHTML = '';
+
+                choices.forEach(playerName => {
+                    const button = document.createElement('button');
+                    button.className = 'player-choice-btn';
+                    button.textContent = playerName;
+                    button.addEventListener('click', () => this.handleMultipleChoiceClick(playerName, button));
+                    this.playerChoicesContainer.appendChild(button);
+                });
+
+                this.playerChoicesContainer.classList.remove('hidden');
+                this.multipleChoiceShown = true;
+            }
+
+            async generatePlayerChoices() {
+                const choices = [this.currentPlayer.name];
+                const otherPlayers = this.playersData
+                    .filter(p => p.name !== this.currentPlayer.name)
+                    .map(p => p.name);
+
+                while (choices.length < GAME_CONFIG.MULTIPLE_CHOICE_COUNT && otherPlayers.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * otherPlayers.length);
+                    choices.push(otherPlayers[randomIndex]);
+                    otherPlayers.splice(randomIndex, 1);
+                }
+
+                // Shuffle choices
+                for (let i = choices.length - 1; i > 0; i--) {
+                    const j = Math.floor(Math.random() * (i + 1));
+                    [choices[i], choices[j]] = [choices[j], choices[i]];
+                }
+
+                return choices;
+            }
+
+            handleMultipleChoiceClick(playerName, button) {
+                if (this.gameWon) return;
+
+                const isCorrect = playerName.toLowerCase() === this.correctAnswer;
+
+                if (isCorrect) {
+                    button.classList.add('correct-answer');
+                    const allButtons = this.playerChoicesContainer.querySelectorAll('.player-choice-btn');
+                    allButtons.forEach(btn => btn.disabled = true);
+                    this.handleCorrectGuess();
+                } else {
+                    // Wrong choice penalty
+                    const delta = -this.wrongChoicePenalty;
+                    const newScore = this.score + delta;
+                    this.animateScoreChange(this.score, newScore, delta);
+
+                    button.classList.add('wrong-answer');
+                    button.disabled = true;
+                    this.showMessage(`Incorrect! -10 pts`, 'error');
+                }
+            }
+
+            revealPlayoffs() {
+                const playoffHeaders = document.querySelectorAll('.playoffs');
+                playoffHeaders.forEach(header => {
+                    header.classList.remove('hidden');
+                    header.classList.add('reveal-animation');
+                });
+
+                const playoffCols = document.querySelectorAll('.playoff-col');
+                playoffCols.forEach(col => {
+                    col.classList.remove('hidden');
+                    col.classList.add('reveal-animation');
+                });
+            }
+
+            revealTeam() {
+                const teamHeaders = document.querySelectorAll('.team-col');
+                teamHeaders.forEach(header => {
+                    header.classList.remove('hidden');
+                    header.classList.add('reveal-animation');
+                });
+            }
+
+            revealAllColumns() {
+                this.revealPlayoffs();
+                this.revealTeam();
+            }
+
+            showMessage(text, type) {
+                this.messageEl.textContent = text;
+                this.messageEl.className = `message ${type} show`;
+
+                if (type !== 'success') {
+                    setTimeout(() => {
+                        this.messageEl.classList.remove('show');
+                    }, GAME_CONFIG.MESSAGE_TIMEOUT);
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            new HockeyGameDashboard();
+        });
+    </script>
 </body>
 </html>

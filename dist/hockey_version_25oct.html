@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Stats Guessing Game</title>
+  <script type="module" crossorigin src="/assets/main-uk_T9HnP.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-DQya4--G.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">Hockey Stats Game</div>
+            <div class="score">Score: 100</div>
+        </header>
+
+        <div class="game-area">
+            <div class="instructions">
+                <p>Guess the NHL player based on their career statistics!</p>
+                <p class="hint-info">Hints available: <span id="hints-remaining">3</span></p>
+            </div>
+
+            <div class="table-container">
+                <table class="stats-table">
+                    <thead>
+                        <tr class="header-row">
+                            <th class="season-col">Season</th>
+                            <th class="team-col hidden">Team</th>
+                            <th class="regular-season" colspan="6">Regular Season</th>
+                            <th class="playoffs hidden" colspan="5">Playoffs</th>
+                        </tr>
+                        <tr class="subheader-row">
+                            <th></th>
+                            <th class="team-col hidden"></th>
+                            <th>GP</th>
+                            <th>G</th>
+                            <th>A</th>
+                            <th>Pts</th>
+                            <th>PIM</th>
+                            <th>+/-</th>
+                            <th class="playoff-col hidden">GP</th>
+                            <th class="playoff-col hidden">G</th>
+                            <th class="playoff-col hidden">A</th>
+                            <th class="playoff-col hidden">Pts</th>
+                            <th class="playoff-col hidden">PIM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="stats-body">
+                        <!-- Populated by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="user-input">
+                <div class="input-group" id="text-input-group">
+                    <input type="text" id="player-guess" placeholder="Enter player name..." autocomplete="off">
+                    <button class="btn btn-primary" id="guess-btn">Guess</button>
+                </div>
+                <div class="player-choices hidden" id="player-choices">
+                    <!-- Multiple choice buttons will be inserted here -->
+                </div>
+                <button class="btn btn-hint" id="hint-btn">Get Hint</button>
+                <div class="message" id="game-message"></div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

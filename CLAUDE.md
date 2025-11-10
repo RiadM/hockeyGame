@@ -23,6 +23,8 @@
 @SCR=.claude/scripts
 @HK=.claude/hooks
 @AGENTS=.claude/agents
+@GAME=hockey_version_25oct.html
+@SRC=src/
 
 # Constraints
 #CRIT=0
@@ -55,6 +57,7 @@ BANNED:
   cache <- basic_broken
   latest_ver <- USE_STABLE_LTS
   rewrite_N_times <- VERIFY_FIRST_WRITE_ONCE
+  build_systems <- GAME_IS_PURE_HTML_CSS_JS
 ```
 
 # RULE R1: PRE_FLIGHT
@@ -78,9 +81,6 @@ VIOLATIONS=#CRIT:
   assume_knowledge
 ```
 
-# NOTE: RULE R1.5 (REQUIREMENTS_SOURCE_TRUTH) removed - project-specific
-# Adapt to your project's requirements structure
-
 # RULE R1.6: SOP_ORGANIZATION
 
 ```
@@ -94,14 +94,14 @@ REQUIRED_STRUCTURE:
       development/     <- Code-first, verification, validation
       testing/         <- Testing standards, fake-passing prevention
       quality/         <- Dense format, documentation rules
-      deployment/      <- Venv usage, environment setup
+      deployment/      <- Environment setup
       git/            <- Worktree safety, branch management
 
 CATEGORIES:
   development=code_first|verification|validation
   testing=fake_passing|test_quality|assertions
   quality=dense_format|no_docs|token_efficiency
-  deployment=venv|docker|environment
+  deployment=static_hosting|environment
   git=worktree|branching|merge_rules
 
 SOP_LOOKUP:
@@ -136,42 +136,53 @@ IF_OLD_SHELL:
 POST_TASK: &KL(ALL) && VERIFY(/bashes==0)
 ```
 
-# RULE R3: WORKTREE_SAFETY
+# RULE R3: ROOT_FOLDER_MANAGEMENT
 
 ```
-SOP: @SOP/git/SOP-WORKTREE-SAFETY.md
-SCRIPT: @SCR/verify_worktree_safe_to_delete.sh
+ROOT_CLEAN=#CRIT:
+  keep_root_minimal=1
+  !temp_files
+  !build_artifacts
+  !random_scripts
 
-PRE_DELETE_MANDATORY:
-1. git worktree list -> IDENTIFY_ALL
-2. FOR_EACH worktree:
-   - @SCR/verify_worktree_safe_to_delete.sh <path>
-   - CHECK_EXIT_CODE
-3. exit_code==1 -> ACTIVE -> ABORT
-4. exit_code==2 -> ASK_USER -> WAIT_CONFIRM
-5. user_confirms? -> PROCEED
+ESSENTIAL_ROOT_FILES:
+  CLAUDE.md           <- PROJECT_DOCUMENTATION (NEVER DELETE)
+  .gitignore          <- GIT_CONFIG (NEVER DELETE)
+  hockey_version_25oct.html <- GAME_ENTRY_POINT (NEVER DELETE)
+  README.md           <- IF_EXISTS_KEEP (user may want it)
+  package.json        <- IF_EXISTS_KEEP (future use)
 
-CLASSIFICATION:
-  ACTIVE: commits<7d || uncommitted_changes>0
-  MERGED: branch_merged && no_new_commits
-  UNCLEAR: !ACTIVE && !MERGED
+ALLOWED_ROOT_DIRS:
+  src/                <- SOURCE_CODE
+  dist/               <- BUILD_OUTPUT (if needed)
+  .claude/            <- CLAUDE_CONFIG
+  .git/               <- GIT_REPO
+  archive/            <- OLD_FILES
+
+BANNED_IN_ROOT:
+  *.py <- !python_scripts
+  *.txt <- !notes
+  *.png|*.jpg <- !images
+  *test*.* <- move_to_appropriate_dir
+  setup-*.* <- !setup_scripts
+  fetch*.* <- !fetch_scripts
+  extract*.* <- !extract_scripts
+  scraped*.* <- !scraped_data
+  *db*.* <- !database_files
+  *.html <- IF_NOT_MAIN_GAME_FILE
+
+CLEAN_ROOT_PATTERN:
+  &RD(root_dir) -> identify_unnecessary -> ask_user_before_delete
+  essential_files? -> KEEP
+  temp|test|old? -> MOVE_TO_ARCHIVE || DELETE
+  !assume_safe_to_delete
 
 VIOLATIONS=#CRIT:
-  delete_without_verify
-  delete_by_name_pattern
-  assume_temporary_based_on_name
-  !check_recent_commits
-  !check_uncommitted_changes
-  !ask_user <- IF_UNCLEAR
-
-RECOVERY:
-  branch_exists? -> git worktree add <path> <branch>
-  !branch_exists? -> LOST
-
-NEVER:
-  git worktree remove ../worktree_* (pattern)
-  assume("option_" == temporary)
-  delete_all_except_main
+  delete_CLAUDE.md
+  delete_.gitignore
+  delete_main_game_file
+  !ask_before_root_cleanup
+  assume_file_unnecessary
 ```
 
 # BANNED_BEHAVIORS
@@ -187,8 +198,14 @@ VIOLATIONS=#CRIT:
   assumptions -> USE_VERIFY_SCRIPTS
   emojis -> USE_TEXT[DONE|FAILED|TARGET]
 
+  # BUILD SYSTEM BLOAT = BANNED
+  vite|webpack|parcel <- GAME_IS_PURE_HTML_CSS_JS
+  npm_run_dev <- !NO_BUILD_SYSTEM
+  jest|playwright <- !FOR_NOW
+  terser|minify <- !OPTIMIZE_LATER
+
   # FAKE VALIDATION = BANNED
-  scripts[print_OK <- !pytest_run]
+  scripts[print_OK <- !real_check]
   scripts[return_0 <- !test_pass]
   scripts[claim_validation <- !subprocess.run]
   scripts[unicode_output <- windows]
@@ -196,7 +213,7 @@ VIOLATIONS=#CRIT:
 
   # DOCUMENTATION FILES = BANNED
   ANY_DOC_FILE[.md|.txt|.doc|.rst] <- !explicit_user_request
-  README*
+  README* <- !explicit_request
   VERIFICATION*
   BUILD_STATUS*
   DEPLOY*
@@ -247,8 +264,8 @@ RESPONSE_FORMAT:
   !vertical_spacing_waste
   !bullet_point_per_trivial_item
 
-  GOOD: "Local: docker-compose up, CPU backend, hot reload, port 8000"
-  BAD:  "Local Development:\n  - Use docker-compose\n  - CPU backend\n  - Hot reload enabled\n  - Port 8000"
+  GOOD: "src/game.js:321, HockeyGame class, monolithic, needs refactor"
+  BAD:  "The game is currently implemented as a monolithic class.\n  - Located in src/game.js\n  - 321 lines long\n  - Needs refactoring"
 
 DOC_FORMAT:
   dense=1
@@ -299,209 +316,213 @@ PLACEMENT:
 !temp_merge_plan.md
 ```
 
-# FILE_OUTPUT
+# GAME_ARCHITECTURE
 
 ```
-CODE_STATE:
-  semantic_analysis > prose
-  structure+loc_refs
-  !explanations
+TECH_STACK:
+  HTML5 + CSS3 + Vanilla_JS_ES6
+  !frameworks
+  !build_systems
+  !transpilers
+  pure_browser_execution=1
 
-FORMAT:
-Component: Name
-State: [initialized|ready|error]
-Dependencies: [list]
-Location: file.py:start-end
+CURRENT_STATE:
+  @GAME: 2.8KB, single_page_app
+  @SRC/game.js: 10KB, 321_lines, HockeyGame_class, MONOLITH
+  @SRC/styles.css: 6.8KB, gradient_design
+  @SRC/data.js: 38KB, 5_players, loaded_upfront
+
+TARGET_STATE:
+  @GAME: entry_point
+  @SRC/config.js: constants[scores|hints|timing]
+  @SRC/models/GameState.js: centralized_state, validation
+  @SRC/logic/GameLogic.js: pure_functions[scoring|validation]
+  @SRC/ui/[ScoreDisplay|HintTooltip|WinModal|TableRenderer].js: reusable_components
+  @SRC/services/PlayerService.js: data[loading|selection]
+  @SRC/utils/EventBus.js: DOM_Logic_decoupling
+  @SRC/data/: manifest.json + players/*.json (lazy_load, 2KB_per_player)
+
+CONSTRAINTS:
+  max_file_size: 150_lines
+  !global_state <- outside_GameState
+  all_mutations: validated_setters
+  !duplicate_code
+  game_logic: testable_without_DOM
 ```
 
-# RULE R4: VERIFY_BEFORE_WRITE
+# GAME_MECHANICS
 
 ```
-PATTERN_BANNED:
-  &WR -> test -> fail -> rewrite (LOOP) = 5000tok
+INITIAL_STATE:
+  regular_season_stats: visible[Season|GP|G|A|Pts|PIM|+/-]
+  team_column: HIDDEN
+  playoff_columns: HIDDEN
+  score: 100
+  hints_available: 3
 
-PATTERN_REQUIRED:
-  create_verify -> run -> fix -> &WR_ONCE = 500tok
+HINT_SYSTEM:
+  hint_1: -20pts, reveal_playoff_stats
+  hint_2: -20pts, reveal_team_names
+  hint_3: -20pts, show_4_player_names (multiple_choice)
 
-VERIFY_SCRIPTS @SCR/:
-  verify-imports.py
-  verify-packages.sh
-  verify-versions.sh
-  verify-config.sh
-  verify-endpoints.sh
-  verify-before-test.sh
+SCORING:
+  correct_guess: +50
+  each_hint: -20
+  best_score: 150 (no_hints + correct)
+  with_all_hints: 90 (3_hints + correct)
+
+WIN_CONDITION:
+  player_name_guessed: case_insensitive
+  all_columns: revealed
+  game_ends: show_celebration
+
+CONFIG_CONSTANTS:
+  INITIAL_SCORE: 100
+  HINT_PENALTY: 20
+  CORRECT_BONUS: 50
+  MAX_HINTS: 3
+  MULTIPLE_CHOICE_COUNT: 4
+  MESSAGE_TIMEOUT: 4000
+  SHAKE_DURATION: 600
 ```
 
-# RULE R5: SCRIPT_VALIDATION
+# SECURITY
 
 ```
-SOP: @SOP/quality/SOP-SCRIPT-VALIDATION.md
+XSS_PREVENTION:
+  !innerHTML <- user_data
+  textContent: MANDATORY <- dynamic_content
+  sanitize: all_player_name_inputs
 
-BANNED_PATTERN:
-  script_writes_files -> print("OK") -> return 0 (FAKE)
+INPUT_VALIDATION:
+  max_length: 100_chars
+  allowed_chars: [a-z|spaces|hyphens|apostrophes]
+  rate_limit: 10_guesses_per_second
 
-REQUIRED_PATTERN:
-  script_writes_files -> subprocess.run(pytest) -> check_exit_code -> return real_status
-
-FAKE_VALIDATION_DETECTION:
-  print("OK") <- !subprocess.run = FAKE
-  return 0 <- !test_execution = FAKE
-  print("DONE") <- !import_check = FAKE
-  tickets_fixed.append() <- !verify = FAKE
-
-SCRIPT_REQUIREMENTS:
-  subprocess.run[pytest]=MANDATORY
-  exit_code_check=MANDATORY
-  import_verification=MANDATORY
-  syntax_check[py_compile]=MANDATORY
-  ascii_output_only=MANDATORY <- windows
-  return 1 <- ANY_FAIL
-  return 0 <- ALL_PASS_ONLY
-
-VIOLATIONS=#CRIT:
-  print_based_status <- !real_check
-  always_return_0
-  no_pytest_execution
-  no_import_verification
-  unicode_output <- windows_fail
-  claim_success <- !validate
-
-ENFORCEMENT:
-  script_with_validation? -> MUST_RUN_REAL_TESTS
-  script_returns_0? -> VERIFY_TESTS_ACTUALLY_PASSED
-  script_prints_OK? -> VERIFY_NOT_FAKE
+CSP_HEADERS:
+  default-src: 'self'
+  script-src: 'self'
+  style-src: 'self' 'unsafe-inline'
+  img-src: 'self' data:
+  connect-src: 'self'
 ```
 
-# VALIDATION_CHECKS
+# PERFORMANCE_TARGETS
 
 ```
-PRE_TASK:
-  &RD(CLAUDE.md)=1
-  &RD(@REQ/*)=1
-  &RD(@SOP/*/*.md) <- IF_EXIST
-  align_requirements=1
-  hook_enforce=1
+METRICS:
+  initial_load: <1s (lazy_data_loading)
+  time_to_interactive: <2s
+  lighthouse: >90
+  bundle_size: <100KB
+  first_contentful_paint: <1s
 
-PRE_RESPONSE:
-  !emojis
-  !new_docs_for_updates
-  !history_files
-  code=semantic
-  mermaid <- complex_structure
-  machine_format=1 <- !explicit_human
-  !README <- !explicit
-  !intro|overview|explore
-  !prose_waste
-  !&WR(@REQ/*)
-
-PRE_COMMIT:
-  pass[linter|typecheck|formatter]=1
-  pass[unit|integration|e2e]=1
-  tests_for_new=1
-  tests_run_before_commit=MANDATORY
-  all_tests_passing=100%
-  no_threshold_adjustments_to_hide_failures=1
-  commit_msg=why
-  !failing_builds
-  api_contract[unchanged || version++]
-
-TESTING_STANDARD:
-  run_all_tests_first=1
-  fix_failures_before_commit=1
-  99%_perfection_minimum=1
-  no_fake_passing=1
-  no_commit_until_verified=1
-
-TEST_QUALITY=#CRIT:
-  assert_statements=MANDATORY
-  pytest.raises=REQUIRED <- exception_tests
-  !print_statements <- use_assert
-  !manual_verification <- automate
-  !should_work_comments <- make_it_work
-
-FAKE_TESTS=BANNED:
-  print("Test passed") -> USE: assert actual == expected
-  print(f"Got {result}") -> USE: assert result == expected_value
-  # TODO: verify manually -> USE: assert condition
-  if result: print("OK") -> USE: assert result
-
-TEST_PATTERN_REQUIRED:
-  # WRONG: Fake test
-  def test_function():
-      result = function()
-      print(f"Result: {result}")  # NO ASSERTION
-
-  # RIGHT: Real test
-  def test_function():
-      result = function()
-      assert result == expected_value
-      assert isinstance(result, ExpectedType)
-
-  # WRONG: Print-based validation
-  def test_error():
-      try:
-          function()
-          print("No error raised")  # FAKE
-      except ValueError:
-          print("ValueError raised")  # FAKE
-
-  # RIGHT: Assert-based validation
-  def test_error():
-      with pytest.raises(ValueError):
-          function()
-
-PRE_BG_SHELL:
-  /bashes=CHECKED
-  shell_count<=1 (max=2)
-  !need_another?
-  cleanup_old_if_done|errored
-  &KL(ALL) <- POST_TASK
+OPTIMIZATIONS:
+  lazy_load: player_data (2KB_vs_38KB)
+  dom_updates: DocumentFragment (batch)
+  !minification <- later
+  !compression <- later
 ```
 
-# DEV_STANDARDS
+# ACCESSIBILITY
 
 ```
-PHILOSOPHY:
-  iterative > massive_release
-  understand > code
-  pragmatism > ideology
-  readable > clever
-  stable > latest
+WCAG_2.1_AA:
+  contrast_ratio: 4.5:1_min
+  focus_indicators: visible_all_interactive
+  keyboard_nav: full_game_playable_no_mouse
+  screen_reader: ARIA_labels_all_controls
+  touch_targets: 44x44px_min
 
-COMMIT_QUALITY:
-  linter=PASS
-  typecheck=PASS
-  formatter=PASS
-  tests[unit|integration|e2e]=PASS
-  tests_new_logic=1
-  msg=why_not_what
+KEYBOARD_SHORTCUTS:
+  Space: Get_Hint
+  Enter: Submit_Guess
+  Escape: Close_modals
+  Tab: Navigate_controls
+```
 
-ARCHITECTURE:
-  composition > inheritance
-  interfaces > direct_calls
-  explicit_flow=1
-  tdd=1
+# DATA_SCHEMA
 
-ERROR_HANDLE:
-  fail_fast=1
-  descriptive_msg=1
-  correlation_ids=1
-  handle_right_layer=1
-  !silent_catch
+```
+PLAYER_OBJECT:
+{
+  name: string,
+  position: string,
+  birth_date: string,
+  birth_place: string,
+  height: string,
+  weight: string,
+  shoots: string,
+  draft_info: string | null,
+  seasons: [
+    {
+      season: string,        // "2003-04"
+      team: string,          // "Detroit Red Wings"
+      league: string,        // "NHL"
+      gp: number,            // Games Played
+      g: number,             // Goals
+      a: number,             // Assists
+      pts: number,           // Points
+      pim: number,           // Penalty Minutes
+      plus_minus: string | null,
+      playoff_gp: number,
+      playoff_g: number,
+      playoff_a: number,
+      playoff_pts: number,
+      playoff_pim: number
+    }
+  ]
+}
 
-DECISION_PRIORITY:
-1. testability
-2. readability
-3. consistency
-4. simplicity
-5. reversibility
+CURRENT_PLAYERS: 5
+  holmstrom, redmond, oreilly, mailloux, kadri
+```
 
-QUALITY_GATES:
-  tests=PASS_ALL
-  !console_errors
-  !console_warnings
-  !failing_builds_merge
-  api_contract=immutable <- !version++
+# DEVELOPMENT_PRIORITIES
+
+```
+PRIORITY_ORDER:
+#CRIT:
+  remove_console.log: src/game.js:53,54,100,230
+  input_sanitization: XSS_prevention
+  CSP_headers: security
+  extract_magic_numbers: src/config.js
+
+#HIGH:
+  lazy_data_loading: 38KB->2KB
+  error_boundaries: try/catch
+  new_game_button: no_refresh
+  keyboard_shortcuts: Space|Enter|Escape
+
+#MED:
+  animated_score_changes: +50/-20_floating_text
+  hint_tooltips: show_cost_before_click
+  win_modal: confetti + instant_replay
+  progress_indicators: hints_used|score_bar
+
+#LOW:
+  modular_refactor: 150_lines_max_per_file
+  mobile_responsive: 480px|1024px_breakpoints
+  lighthouse_optimization: >90_score
+```
+
+# TROUBLESHOOTING
+
+```
+PLAYER_DATA_NOT_LOADING:
+  check: data.js_path_in_HTML_script_tag
+  check: PLAYERS_DATA_defined_before_game.js
+  check: browser_console_errors
+
+HINTS_NOT_REVEALING:
+  check: .hidden_class_CSS (display:none!important)
+  check: reveal-animation_class_applied
+  check: hintsUsed_state_incrementing
+
+MULTIPLE_CHOICE_NOT_SHOWING:
+  check: Hint_3_triggered (hintsUsed===3)
+  check: text-input-group_.hidden_class
+  check: player-choices_container_not_hidden
 ```
 
 # SUBAGENT_DELEGATION
@@ -523,15 +544,13 @@ ORGANIZER_PROTOCOL:
 2. agent-organizer -> analyze+recommend_team+plan
 3. main -> execute_delegation
 
-AVAILABLE_AGENTS: 38
-  development: 13 (frontend|backend|lang|dx)
-  infrastructure: 5 (cloud|ops)
-  quality: 5 (review|test)
-  data_ai: 8 (data|ai)
-  security: 1
-  business: 1
-  specialized: 2 (docs|api)
-  organizer: 1
+GAME_AGENTS:
+  frontend-developer: code_implementation
+  ui-designer: visual_design
+  ux-designer: user_experience
+  security-auditor: security_review
+  test-automator: testing
+  performance-engineer: optimization
 
 TEAM_SIZE:
   simple -> 3_agents
@@ -565,6 +584,11 @@ RULES:
   !bg_process_in_main <- !(/bashes_check)
 
   verify_scripts > assumptions
+
+  pure_HTML_CSS_JS=1
+  !build_systems
+  !frameworks
+  !transpilers
 ```
 
 # EXECUTION_FLOW
