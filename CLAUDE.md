@@ -204,6 +204,11 @@ VIOLATIONS=#CRIT:
   jest|playwright <- !FOR_NOW
   terser|minify <- !OPTIMIZE_LATER
 
+  # COLOR PALETTE VIOLATIONS = BANNED
+  yellow|orange|green|purple <- !HOCKEY_GAME
+  colors_outside[cyan|blue|slate] <- VIOLATION=#CRIT
+  use_yellow_for_league_diff <- USE[borders|opacity|font_weight]
+
   # FAKE VALIDATION = BANNED
   scripts[print_OK <- !real_check]
   scripts[return_0 <- !test_pass]
@@ -331,6 +336,26 @@ CURRENT_STATE:
   @SRC/game.js: 10KB, 321_lines, HockeyGame_class, MONOLITH
   @SRC/styles.css: 6.8KB, gradient_design
   @SRC/data.js: 38KB, 5_players, loaded_upfront
+
+LAYOUT=#CRIT:
+  grid: 15%_left_sidebar + 1fr_center_table + 20%_right_sidebar
+  team_column: max-width_150px, padding_8px, nowrap, <10%_margin
+  compact: tight_spacing, no_waste, hockeydb-style
+
+MULTIPLAYER_COMPONENTS=#HIGH:
+  right_sidebar: room_info + leaderboard + game_status + chat
+  room_code: centered, 18px, letter-spacing_2px
+  leaderboard: live_rankings, current_user_highlighted, round_progress
+  chat: scrollable_messages, input+send, 10-11px_font
+  status: mode|time_limit|turn_indicator
+
+COLOR_PALETTE=#CRIT:
+  ONLY: cyan(#06b6d4|#0891b2|#0e7490) + blue(#dbeafe|#bfdbfe|#e0f2fe|#bae6fd|#a5f3fc|#67e8f9|#cffafe) + slate(#f1f5f9|#e2e8f0|#cbd5e1|#94a3b8|#64748b|#334155)
+  BANNED: yellow|green|orange|red <- EXCEPT_error_states
+  DIFFERENTIATION: borders(solid_vs_dashed) + gradient_intensity
+  ROW_COORDINATION=#CRIT: ALL columns in row follow SAME color_family + border_style
+  SMART_DESIGN: NHL_rows=cyan_theme, junior_rows=slate_theme, NO_mixing
+  NEVER_change_palette
 
 TARGET_STATE:
   @GAME: entry_point
