@@ -5,12 +5,12 @@ import { GameState } from './models/GameState.js';
 import { eventBus } from './utils/EventBus.js';
 import { KeyboardHandler } from './utils/KeyboardHandler.js';
 import { GAME_CONFIG } from './config.js';
+import playerService from './services/PlayerService.js';
 
 class HockeyGameDashboard {
             constructor() {
                 // Centralized state management
                 this.gameState = new GameState(GAME_CONFIG);
-                this.playersData = null;
                 this.keyboardHandler = null;
 
                 this.init();
@@ -72,18 +72,10 @@ class HockeyGameDashboard {
 
             async selectRandomPlayer() {
                 try {
-                    if (!this.playersData) {
-                        const { PLAYERS_DATA } = await import('./data.js');
-                        this.playersData = PLAYERS_DATA;
-                    }
-
-                    if (!this.playersData || !this.playersData.length) {
-                        throw new Error('No players available');
-                    }
-
-                    // If no players selected yet, pre-select 5 unique players
+                    // If no players selected yet, pre-select 5 unique players using PlayerService
                     if (this.gameState.selectedPlayers.length === 0) {
-                        this.preSelectPlayers();
+                        const players = await playerService.getRandomPlayers(this.gameState.totalRounds);
+                        this.gameState.setSelectedPlayers(players);
                     }
 
                     // Use current round index to get player (0-indexed)
@@ -92,19 +84,13 @@ class HockeyGameDashboard {
                         this.gameState.setCurrentPlayer(this.gameState.selectedPlayers[playerIndex]);
                     } else {
                         // Fallback to random if something goes wrong
-                        const randomIndex = Math.floor(Math.random() * this.playersData.length);
-                        this.gameState.setCurrentPlayer(this.playersData[randomIndex]);
+                        const randomPlayer = await playerService.getRandomPlayer();
+                        this.gameState.setCurrentPlayer(randomPlayer);
                     }
                 } catch (error) {
                     console.error('Failed to load player data:', error);
                     throw error;
                 }
-            }
-
-            preSelectPlayers() {
-                // Shuffle all players and pick first 5
-                const shuffled = [...this.playersData].sort(() => Math.random() - GAME_CONFIG.SHUFFLE_RANDOMIZER);
-                this.gameState.setSelectedPlayers(shuffled.slice(0, this.gameState.totalRounds));
             }
 
             createStatsRow(season) {
@@ -573,9 +559,8 @@ class HockeyGameDashboard {
 
                     // Pre-select new set of players for the game
                     this.gameState.setSelectedPlayers([]);
-                    this.preSelectPlayers();
 
-                    // Load first player
+                    // Load first player (will also pre-select all 5 players)
                     await this.selectRandomPlayer();
                     this.populateTable();
 
@@ -768,7 +753,10 @@ class HockeyGameDashboard {
 
             async generatePlayerChoices() {
                 const choices = [this.gameState.currentPlayer.name];
-                const otherPlayers = this.playersData
+
+                // Get all player names from manifest (no data loading required)
+                const allPlayerInfo = await playerService.getAllPlayerInfo();
+                const otherPlayers = allPlayerInfo
                     .filter(p => p.name !== this.gameState.currentPlayer.name)
                     .map(p => p.name);
 
