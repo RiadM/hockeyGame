@@ -1,0 +1,31 @@
+{
+  "version": "1.0.0",
+  "description": "Player data manifest for hockey game",
+  "players": [
+    {
+      "id": "holmstrom",
+      "name": "Tomas Holmstrom",
+      "file": "players/holmstrom.json"
+    },
+    {
+      "id": "redmond",
+      "name": "Mickey Redmond",
+      "file": "players/redmond.json"
+    },
+    {
+      "id": "oreilly",
+      "name": "Ryan O'Reilly",
+      "file": "players/oreilly.json"
+    },
+    {
+      "id": "mailloux",
+      "name": "Logan Mailloux",
+      "file": "players/mailloux.json"
+    },
+    {
+      "id": "kadri",
+      "name": "Nazem Kadri",
+      "file": "players/kadri.json"
+    }
+  ]
+}
