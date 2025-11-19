@@ -148,7 +148,7 @@ import { HockeyGameDashboard } from './game.js';
                             roomCodeDisplay.style.borderColor = '';
                         }, 1000);
                     } catch (err) {
-                        console.error('Copy failed:', err);
+                        // Copy failed silently
                     }
                 });
             }

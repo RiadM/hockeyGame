@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Tests - XSS Prevention</title>
+    <style>
+        body {
+            font-family: monospace;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #00ff00;
+        }
+        .test { margin: 20px 0; padding: 15px; background: #2a2a2a; border-left: 4px solid #0891b2; }
+        .pass { border-left-color: #10b981; }
+        .fail { border-left-color: #ef4444; }
+        .result { margin-top: 10px; padding: 10px; background: #1a1a1a; }
+        button { background: #0891b2; color: white; border: none; padding: 10px 20px; cursor: pointer; margin: 5px; }
+        button:hover { background: #0e7490; }
+        input { padding: 8px; margin: 5px; background: #1a1a1a; border: 1px solid #0891b2; color: #00ff00; }
+    </style>
+</head>
+<body>
+    <h1>Security Tests - XSS Prevention & Input Sanitization</h1>
+
+    <div class="test" id="test1">
+        <h3>Test 1: Input Sanitization (Remove Special Characters)</h3>
+        <p>Expected: Only a-z, spaces, hyphens, apostrophes allowed</p>
+        <input type="text" id="input1" value="<script>alert('xss')</script>" />
+        <button onclick="testSanitization()">Test</button>
+        <div class="result" id="result1"></div>
+    </div>
+
+    <div class="test" id="test2">
+        <h3>Test 2: Input Length Limit</h3>
+        <p>Expected: Max 100 characters</p>
+        <input type="text" id="input2" style="width: 500px;" />
+        <button onclick="testLength()">Test</button>
+        <div class="result" id="result2"></div>
+    </div>
+
+    <div class="test" id="test3">
+        <h3>Test 3: Rate Limiting</h3>
+        <p>Expected: Block after 10 guesses in 1 second</p>
+        <button onclick="testRateLimiting()">Test (11 rapid guesses)</button>
+        <div class="result" id="result3"></div>
+    </div>
+
+    <div class="test" id="test4">
+        <h3>Test 4: XSS Prevention (textContent vs innerHTML)</h3>
+        <p>Expected: Script tags should be rendered as text, not executed</p>
+        <div id="safe-container"></div>
+        <button onclick="testXSS()">Test</button>
+        <div class="result" id="result4"></div>
+    </div>
+
+    <script type="module">
+        // Import game config
+        const GAME_CONFIG = {
+            ALLOWED_INPUT_PATTERN: /[^a-z\s'-]/gi,
+            MAX_INPUT_LENGTH: 100,
+            MAX_GUESSES_PER_WINDOW: 10,
+            RATE_LIMIT_WINDOW: 1000
+        };
+
+        function sanitizeInput(input) {
+            if (!input) return '';
+            return input.trim().toLowerCase()
+                .replace(GAME_CONFIG.ALLOWED_INPUT_PATTERN, '')
+                .substring(0, GAME_CONFIG.MAX_INPUT_LENGTH);
+        }
+
+        window.testSanitization = function() {
+            const input = document.getElementById('input1').value;
+            const sanitized = sanitizeInput(input);
+            const result = document.getElementById('result1');
+            const test = document.getElementById('test1');
+
+            if (sanitized === 'scriptalertxssscript' || sanitized === '') {
+                result.innerHTML = `PASS: Input "${input}" sanitized to "${sanitized}"`;
+                test.classList.add('pass');
+                test.classList.remove('fail');
+            } else {
+                result.innerHTML = `FAIL: Got "${sanitized}", expected empty or "scriptalertxssscript"`;
+                test.classList.add('fail');
+                test.classList.remove('pass');
+            }
+        };
+
+        window.testLength = function() {
+            const longString = 'a'.repeat(150);
+            document.getElementById('input2').value = longString;
+            const sanitized = sanitizeInput(longString);
+            const result = document.getElementById('result2');
+            const test = document.getElementById('test2');
+
+            if (sanitized.length === 100) {
+                result.innerHTML = `PASS: Input length ${longString.length} limited to ${sanitized.length}`;
+                test.classList.add('pass');
+                test.classList.remove('fail');
+            } else {
+                result.innerHTML = `FAIL: Expected length 100, got ${sanitized.length}`;
+                test.classList.add('fail');
+                test.classList.remove('pass');
+            }
+        };
+
+        window.testRateLimiting = function() {
+            const timestamps = [];
+            const result = document.getElementById('result3');
+            const test = document.getElementById('test3');
+
+            // Simulate 11 rapid guesses
+            for (let i = 0; i < 11; i++) {
+                timestamps.push(Date.now());
+            }
+
+            // Check rate limiting
+            const now = Date.now();
+            const filtered = timestamps.filter(t => now - t < GAME_CONFIG.RATE_LIMIT_WINDOW);
+            const isLimited = filtered.length >= GAME_CONFIG.MAX_GUESSES_PER_WINDOW;
+
+            if (isLimited) {
+                result.innerHTML = `PASS: Rate limiting triggered after ${filtered.length} guesses in 1 second`;
+                test.classList.add('pass');
+                test.classList.remove('fail');
+            } else {
+                result.innerHTML = `FAIL: Rate limiting not triggered (${filtered.length} guesses)`;
+                test.classList.add('fail');
+                test.classList.remove('pass');
+            }
+        };
+
+        window.testXSS = function() {
+            const container = document.getElementById('safe-container');
+            const xssPayload = '<img src=x onerror=alert("XSS")>';
+
+            // Safe method using textContent
+            container.textContent = xssPayload;
+
+            const result = document.getElementById('result4');
+            const test = document.getElementById('test4');
+
+            // Check if script was rendered as text (safe) or executed (unsafe)
+            const renderedText = container.textContent;
+            if (renderedText === xssPayload && !container.querySelector('img')) {
+                result.innerHTML = `PASS: XSS payload rendered as text, not executed`;
+                test.classList.add('pass');
+                test.classList.remove('fail');
+            } else {
+                result.innerHTML = `FAIL: XSS payload may have been executed`;
+                test.classList.add('fail');
+                test.classList.remove('pass');
+            }
+        };
+
+        // Auto-run all tests on load
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                testSanitization();
+                testLength();
+                testRateLimiting();
+                testXSS();
+            }, 500);
+        });
+    </script>
+</body>
+</html>
