@@ -96,7 +96,6 @@ class HockeyGameDashboard {
             }
 
             handleFatalError(error) {
-                console.error('Game initialization failed:', error);
                 alert('Game initialization failed. Please refresh the page.');
             }
 
@@ -128,7 +127,6 @@ class HockeyGameDashboard {
 
                     this.correctAnswer = this.currentPlayer.name.toLowerCase();
                 } catch (error) {
-                    console.error('Failed to load player data:', error);
                     throw error;
                 }
             }
@@ -323,14 +321,34 @@ class HockeyGameDashboard {
                     // Replace table with waiting screen (multiplayer only)
                     const mainContent = document.querySelector('.main-content');
                     if (mainContent) {
-                        mainContent.innerHTML = `
-                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 12px; flex-direction: column; padding: 40px;">
-                                <div style="font-size: 36px; font-weight: 900; color: #065f46; margin-bottom: 20px;">Correct!</div>
-                                <div style="font-size: 24px; font-weight: 700; color: #047857; margin-bottom: 40px;">${this.currentPlayer.name}</div>
-                                <div style="font-size: 18px; color: #059669; margin-bottom: 20px;">+${delta} points</div>
-                                <div style="font-size: 14px; color: #047857;">Waiting for other players...</div>
-                            </div>
-                        `;
+                        // Clear existing content safely
+                        mainContent.innerHTML = '';
+
+                        // Create elements using DOM API for XSS prevention
+                        const container = document.createElement('div');
+                        container.style.cssText = 'display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 12px; flex-direction: column; padding: 40px;';
+
+                        const correctText = document.createElement('div');
+                        correctText.style.cssText = 'font-size: 36px; font-weight: 900; color: #065f46; margin-bottom: 20px;';
+                        correctText.textContent = 'Correct!';
+
+                        const playerText = document.createElement('div');
+                        playerText.style.cssText = 'font-size: 24px; font-weight: 700; color: #047857; margin-bottom: 40px;';
+                        playerText.textContent = this.currentPlayer.name;
+
+                        const pointsText = document.createElement('div');
+                        pointsText.style.cssText = 'font-size: 18px; color: #059669; margin-bottom: 20px;';
+                        pointsText.textContent = `+${delta} points`;
+
+                        const waitingText = document.createElement('div');
+                        waitingText.style.cssText = 'font-size: 14px; color: #047857;';
+                        waitingText.textContent = 'Waiting for other players...';
+
+                        container.appendChild(correctText);
+                        container.appendChild(playerText);
+                        container.appendChild(pointsText);
+                        container.appendChild(waitingText);
+                        mainContent.appendChild(container);
                     }
                 } else {
                     // Solo mode - proceed to next round after delay

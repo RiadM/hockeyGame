@@ -153,7 +153,7 @@ import { GameEventHandlers } from './ui/EventHandlers.js';
                             roomCodeDisplay.style.borderColor = '';
                         }, 1000);
                     } catch (err) {
-                        console.error('Copy failed:', err);
+                        // Copy failed silently
                     }
                 });
             }
