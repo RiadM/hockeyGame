@@ -31,11 +31,13 @@ class ChatManager {
 
         const userSpan = document.createElement('span');
         userSpan.className = 'chat-message-user';
-        userSpan.textContent = `${this.sanitize(username)}:`;
+        // textContent automatically escapes HTML, preventing XSS
+        userSpan.textContent = `${username}:`;
 
         const textSpan = document.createElement('span');
         textSpan.className = 'chat-message-text';
-        textSpan.textContent = this.sanitize(text);
+        // textContent automatically escapes HTML, preventing XSS
+        textSpan.textContent = text;
 
         messageEl.appendChild(userSpan);
         messageEl.appendChild(textSpan);
@@ -51,17 +53,12 @@ class ChatManager {
     loadChatHistory(messages) {
         const chatMessages = document.querySelector('.chat-messages');
         if (chatMessages) {
-            chatMessages.innerHTML = '';
+            // Clear chat safely
+            chatMessages.textContent = '';
         }
         messages.forEach(msg => {
             this.addChatMessage(msg.playerName, msg.text, false);
         });
-    }
-
-    sanitize(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     getMessages() {

@@ -29,7 +29,6 @@ class SyncManager {
                 try {
                     conn.send(data);
                 } catch (err) {
-                    console.error(`Failed to send to ${peerID}:`, err);
                     this.connections.delete(peerID);
                 }
             }
@@ -139,7 +138,6 @@ class SyncManager {
                     if (data.state.chatMessages) {
                         this.chatManager.loadChatHistory(data.state.chatMessages);
                     }
-                    console.log('[Guest] Full state synced:', this.roomManager.gameState);
                     break;
 
                 case 'state':

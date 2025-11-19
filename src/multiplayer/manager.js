@@ -29,8 +29,6 @@ class MultiplayerManager {
         const backoffDelays = [0, 2000, 5000];
 
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            console.log(`[Room Creation] Attempt ${attempt + 1}/${maxAttempts}`);
-
             if (backoffDelays[attempt] > 0) {
                 await new Promise(resolve => setTimeout(resolve, backoffDelays[attempt]));
             }
@@ -42,13 +40,10 @@ class MultiplayerManager {
                 }
 
                 const roomCode = await this.createRoomAttempt(playerName, isPrivate);
-                console.log('[Room Creation] Success on attempt', attempt + 1);
                 this.connectionManager.clearConnectionError();
                 return roomCode;
 
             } catch (error) {
-                console.error(`[Room Creation] Attempt ${attempt + 1} failed:`, error.message);
-
                 if (attempt === maxAttempts - 1) {
                     const errorMsg = this.connectionManager.getUserFriendlyError(error);
                     this.connectionManager.displayConnectionError(errorMsg);
