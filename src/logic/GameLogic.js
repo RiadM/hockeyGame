@@ -19,7 +19,7 @@ export function calculateScore(currentScore, hintsUsed, isCorrect, wrongChoices 
   score -= hintsUsed * GAME_CONFIG.HINT_PENALTY;
 
   // Deduct wrong choice penalties
-  score -= wrongChoices * 10; // WRONG_CHOICE_PENALTY constant
+  score -= wrongChoices * GAME_CONFIG.WRONG_CHOICE_PENALTY;
 
   // Add correct guess bonus
   if (isCorrect) {
@@ -193,7 +193,7 @@ export function isRateLimited(
  * @param {number} [seed] - Optional seed for deterministic testing
  * @returns {Array} Array of selected player objects
  */
-export function preSelectPlayers(allPlayers, count = 5, seed) {
+export function preSelectPlayers(allPlayers, count = GAME_CONFIG.TOTAL_ROUNDS, seed) {
   if (!allPlayers || allPlayers.length === 0) {
     throw new Error('No players available');
   }

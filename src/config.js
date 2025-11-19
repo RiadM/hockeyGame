@@ -6,6 +6,10 @@ export const GAME_CONFIG = {
   INITIAL_SCORE: 100,
   HINT_PENALTY: 20,
   CORRECT_BONUS: 50,
+  WRONG_CHOICE_PENALTY: 10,
+
+  // Game Rounds
+  TOTAL_ROUNDS: 5,
 
   // Hints
   MAX_HINTS: 3,
