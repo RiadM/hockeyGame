@@ -4,22 +4,7 @@
 import { GameState } from './models/GameState.js';
 import { eventBus } from './utils/EventBus.js';
 import { KeyboardHandler } from './utils/KeyboardHandler.js';
-
-const GAME_CONFIG = {
-    INITIAL_SCORE: 100,
-    HINT_PENALTY: 20,
-    CORRECT_BONUS: 50,
-    WRONG_CHOICE_PENALTY: 10,
-    MAX_HINTS: 3,
-    MAX_ROUNDS: 5,
-    TOTAL_ROUNDS: 5,
-    ALLOWED_INPUT_PATTERN: /[^a-z\s'-]/gi,
-    MAX_INPUT_LENGTH: 100,
-    RATE_LIMIT_WINDOW: 1000,
-    MAX_GUESSES_PER_WINDOW: 10,
-    MESSAGE_TIMEOUT: 4000,
-    SHAKE_DURATION: 600
-};
+import { GAME_CONFIG } from './config.js';
 
 class HockeyGameDashboard {
             constructor() {
@@ -118,7 +103,7 @@ class HockeyGameDashboard {
 
             preSelectPlayers() {
                 // Shuffle all players and pick first 5
-                const shuffled = [...this.playersData].sort(() => Math.random() - 0.5);
+                const shuffled = [...this.playersData].sort(() => Math.random() - GAME_CONFIG.SHUFFLE_RANDOMIZER);
                 this.gameState.setSelectedPlayers(shuffled.slice(0, this.gameState.totalRounds));
             }
 
@@ -306,7 +291,7 @@ class HockeyGameDashboard {
                 this.roundValue.textContent = `${this.gameState.currentRound} / ${this.gameState.totalRounds}`;
 
                 // Update overall progress bar
-                const progressPercentage = (this.gameState.currentRound / this.gameState.totalRounds) * 100;
+                const progressPercentage = (this.gameState.currentRound / this.gameState.totalRounds) * GAME_CONFIG.PERCENTAGE_MULTIPLIER;
                 this.roundProgressBar.style.width = `${progressPercentage}%`;
             }
 
@@ -494,7 +479,7 @@ class HockeyGameDashboard {
 
             showFinalScore() {
                 // Calculate percentage
-                const percentage = Math.round((this.gameState.score / this.gameState.maxPossibleScore) * 100);
+                const percentage = Math.round((this.gameState.score / this.gameState.maxPossibleScore) * GAME_CONFIG.PERCENTAGE_MULTIPLIER);
 
                 // Calculate grade
                 let grade = 'F';
@@ -697,7 +682,7 @@ class HockeyGameDashboard {
                 if (this.gameState.animatingScore) return;
 
                 this.gameState.setAnimatingScore(true);
-                const duration = 800;
+                const duration = GAME_CONFIG.SCORE_ANIMATION_DURATION;
                 const startTime = performance.now();
 
                 // Show delta badge
@@ -709,7 +694,7 @@ class HockeyGameDashboard {
                     const progress = Math.min(elapsed / duration, 1);
 
                     // Easing function for smooth animation
-                    const easeProgress = progress < 0.5
+                    const easeProgress = progress < GAME_CONFIG.EASING_MIDPOINT
                         ? 2 * progress * progress
                         : -1 + (4 - 2 * progress) * progress;
 
@@ -739,7 +724,7 @@ class HockeyGameDashboard {
                 // Start round at 100: bar at 100%
                 // Use hint to 80: bar at 80%
                 // Correct to 130: bar at 130%
-                const percentage = (this.gameState.score / this.gameState.roundStartScore) * 100;
+                const percentage = (this.gameState.score / this.gameState.roundStartScore) * GAME_CONFIG.PERCENTAGE_MULTIPLIER;
 
                 // Update score value
                 this.scoreValue.textContent = this.gameState.score;
