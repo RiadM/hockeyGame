@@ -3,9 +3,14 @@
 
 import { MultiplayerManager } from './multiplayer/manager.js';
 import { HockeyGameDashboard } from './game.js';
+import { GameEventHandlers } from './ui/EventHandlers.js';
 
 // Mode Selection & Chat Setup
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize event handlers for game events
+            const gameEventHandlers = new GameEventHandlers();
+            window.gameEventHandlers = gameEventHandlers; // Store for cleanup if needed
+
             const modeModal = document.getElementById('mode-modal');
             const soloBtn = document.getElementById('solo-mode-btn');
             const createRoomBtn = document.getElementById('create-room-btn');

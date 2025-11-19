@@ -1,6 +1,8 @@
 // Hockey Game Logic - Core game mechanics
 // Handles scoring, hints, guessing, round progression
 
+import { eventBus } from './utils/EventBus.js';
+
 const GAME_CONFIG = {
     INITIAL_SCORE: 100,
     HINT_PENALTY: 20,
@@ -224,6 +226,13 @@ class HockeyGameDashboard {
             }
 
             updateRoundDisplay() {
+                // Emit round changed event
+                eventBus.emit('roundChanged', {
+                    currentRound: this.currentRound,
+                    totalRounds: this.totalRounds,
+                    progressPercentage: (this.currentRound / this.totalRounds) * 100
+                });
+
                 this.roundValue.textContent = `${this.currentRound} / ${this.totalRounds}`;
 
                 // Update overall progress bar
@@ -294,6 +303,16 @@ class HockeyGameDashboard {
                     pointsGained: delta
                 });
 
+                // Emit player guessed event
+                eventBus.emit('playerGuessed', {
+                    correct: true,
+                    playerName: this.currentPlayer.name,
+                    bonus: delta,
+                    newScore: newScore,
+                    round: this.currentRound,
+                    hintsUsed: this.hintsUsed
+                });
+
                 this.animateScoreChange(this.score, newScore, delta);
                 this.revealAllColumns();
 
@@ -330,6 +349,13 @@ class HockeyGameDashboard {
             }
 
             async loadNextPlayer() {
+                // Emit round complete event
+                eventBus.emit('roundComplete', {
+                    round: this.currentRound,
+                    score: this.score,
+                    player: this.currentPlayer?.name
+                });
+
                 // Increment round counter
                 this.currentRound++;
                 this.updateRoundDisplay();
@@ -343,6 +369,13 @@ class HockeyGameDashboard {
                 // Set new round baseline - current score is 100%
                 this.roundStartScore = this.score;
                 this.maxScore = this.score + this.correctGuessBonus;
+
+                // Emit round start event
+                eventBus.emit('roundStart', {
+                    round: this.currentRound,
+                    totalRounds: this.totalRounds,
+                    score: this.score
+                });
 
                 // Reset UI
                 this.playerInput.value = '';
@@ -383,6 +416,14 @@ class HockeyGameDashboard {
             showFinalScore() {
                 // Calculate percentage
                 const percentage = Math.round((this.score / this.maxPossibleScore) * 100);
+
+                // Emit game complete event
+                eventBus.emit('gameComplete', {
+                    finalScore: this.score,
+                    maxPossibleScore: this.maxPossibleScore,
+                    percentage: percentage,
+                    roundHistory: this.roundHistory
+                });
 
                 // Calculate grade
                 let grade = 'F';
@@ -453,6 +494,12 @@ class HockeyGameDashboard {
             }
 
             handleIncorrectGuess() {
+                // Emit player guessed event
+                eventBus.emit('playerGuessed', {
+                    correct: false,
+                    guess: this.playerInput.value
+                });
+
                 this.playerInput.classList.add('incorrect');
                 setTimeout(() => {
                     this.playerInput.classList.remove('incorrect');
@@ -474,6 +521,14 @@ class HockeyGameDashboard {
                 this.hintsUsed++;
                 const delta = -this.hintPenalty;
                 const newScore = this.score - this.hintPenalty;
+
+                // Emit hint used event
+                eventBus.emit('hintUsed', {
+                    hintNumber: this.hintsUsed,
+                    totalHints: this.maxHints,
+                    penalty: this.hintPenalty,
+                    newScore: newScore
+                });
 
                 // Mark hint as used
                 const hintDot = document.getElementById(`hint-dot-${this.hintsUsed}`);
@@ -563,6 +618,13 @@ class HockeyGameDashboard {
                 // Use hint to 80: bar at 80%
                 // Correct to 130: bar at 130%
                 const percentage = (this.score / this.roundStartScore) * 100;
+
+                // Emit score changed event
+                eventBus.emit('scoreChanged', {
+                    score: this.score,
+                    roundStartScore: this.roundStartScore,
+                    percentage: Math.round(percentage)
+                });
 
                 // Update score value
                 this.scoreValue.textContent = this.score;
