@@ -31,7 +31,6 @@ class ConnectionManager {
             clearTimeout(timeoutId);
             return true;
         } catch (err) {
-            console.error('[Connectivity Check] Failed:', err.message);
             return false;
         }
     }
@@ -39,15 +38,21 @@ class ConnectionManager {
     displayConnectionError(message) {
         const roomCodeEl = document.querySelector('.room-code');
         if (roomCodeEl) {
-            roomCodeEl.innerHTML = `
-                <div style="color: #ef4444; font-size: 11px; text-align: center;">
-                    ${message}
-                </div>
-                <button class="btn btn-primary" onclick="window.location.reload()"
-                        style="width: 100%; margin-top: 8px; font-size: 11px; padding: 6px;">
-                    Retry Connection
-                </button>
-            `;
+            // Use DOM methods to prevent XSS
+            roomCodeEl.textContent = '';
+
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = 'color: #ef4444; font-size: 11px; text-align: center;';
+            errorDiv.textContent = message;
+
+            const retryBtn = document.createElement('button');
+            retryBtn.className = 'btn btn-primary';
+            retryBtn.style.cssText = 'width: 100%; margin-top: 8px; font-size: 11px; padding: 6px;';
+            retryBtn.textContent = 'Retry Connection';
+            retryBtn.onclick = () => window.location.reload();
+
+            roomCodeEl.appendChild(errorDiv);
+            roomCodeEl.appendChild(retryBtn);
         }
     }
 
@@ -111,7 +116,6 @@ class ConnectionManager {
 
             this.peer.on('open', (id) => {
                 clearTimeout(timeout);
-                console.log('[PeerJS] Connection opened. ID:', id);
                 if (this.onOpenCallback) {
                     this.onOpenCallback(id);
                 }
@@ -120,7 +124,6 @@ class ConnectionManager {
 
             this.peer.on('error', (err) => {
                 clearTimeout(timeout);
-                console.error('[PeerJS] Error:', err.type, err.message);
 
                 let userMessage = '';
                 if (err.type === 'unavailable-id') {
@@ -162,7 +165,6 @@ class ConnectionManager {
             });
 
             this.peer.on('open', () => {
-                console.log('[PeerJS] Guest peer opened:', this.playerID);
                 if (this.onOpenCallback) {
                     this.onOpenCallback(this.playerID);
                 }
@@ -170,7 +172,6 @@ class ConnectionManager {
             });
 
             this.peer.on('error', (err) => {
-                console.error('[PeerJS] Guest error:', err.type, err.message);
 
                 let userMessage = '';
                 switch(err.type) {
@@ -217,7 +218,6 @@ class ConnectionManager {
                         conn.close();
                         if (attempts < maxAttempts) {
                             const delay = retryDelays[attempts - 1] || 15000;
-                            console.log(`Connection attempt ${attempts} failed. Retrying in ${delay/1000}s...`);
                             setTimeout(attemptConnection, delay);
                         } else {
                             reject(new Error(`Connection failed after ${maxAttempts} attempts. Host may be offline or network issues detected.`));
@@ -245,7 +245,6 @@ class ConnectionManager {
                             connected = true;
                             iceComplete = true;
                             clearTimeout(connectionTimeout);
-                            console.log(`[Connection] Successfully connected on attempt ${attempts}`);
                             resolve(conn);
                         } else if (conn.peerConnection && conn.peerConnection.iceGatheringState === 'gathering') {
                             setTimeout(waitForIce, 500);
@@ -262,10 +261,8 @@ class ConnectionManager {
                     connected = true;
                     iceComplete = true;
                     clearTimeout(connectionTimeout);
-                    console.error(`[Connection] Attempt ${attempts} error:`, err);
                     if (attempts < maxAttempts) {
                         const delay = retryDelays[attempts - 1] || 15000;
-                        console.log(`Retrying in ${delay/1000}s...`);
                         this.displayConnectionError(`Connection failed. Retrying in ${delay/1000}s... (Attempt ${attempts}/${maxAttempts})`);
                         setTimeout(attemptConnection, delay);
                     } else {
