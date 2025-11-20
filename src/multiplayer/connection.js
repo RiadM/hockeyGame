@@ -148,10 +148,10 @@ class ConnectionManager {
         });
     }
 
-    createGuestPeer(code) {
+    createGuestPeer(code, reusePlayerID = null) {
         return new Promise((resolve, reject) => {
             this.roomCode = code.toUpperCase();
-            this.playerID = 'player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            this.playerID = reusePlayerID || ('player_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9));
 
             this.peer = new Peer(this.playerID, {
                 debug: 2,

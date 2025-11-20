@@ -9,10 +9,15 @@ class SyncManager {
         this.isHost = false;
         this.turnTimer = null;
         this.turnDuration = 60;
+        this.hostMigration = null;
     }
 
     setHost(isHost) {
         this.isHost = isHost;
+    }
+
+    setHostMigration(hostMigration) {
+        this.hostMigration = hostMigration;
     }
 
     addConnection(peerID, conn) {
@@ -65,6 +70,21 @@ class SyncManager {
                 }
                 if (onPlayerJoinCallback) {
                     onPlayerJoinCallback();
+                }
+                break;
+
+            case 'rejoin':
+                // Handle reconnection - send fullSync on new connection (fromPeer)
+                const rejoinConn = this.connections.get(fromPeer);
+                if (rejoinConn) {
+                    rejoinConn.send({
+                        type: 'fullSync',
+                        state: this.roomManager.getFullSyncData()
+                    });
+                }
+                this.broadcast({ type: 'players', players: this.roomManager.gameState.players });
+                if (updateLeaderboardCallback) {
+                    updateLeaderboardCallback(this.roomManager.gameState.players);
                 }
                 break;
 
@@ -132,6 +152,9 @@ class SyncManager {
             switch (data.type) {
                 case 'fullSync':
                     this.roomManager.gameState = data.state;
+                    if (data.state.joinOrder && this.hostMigration) {
+                        this.hostMigration.joinOrder = data.state.joinOrder;
+                    }
                     if (updateLeaderboardCallback) {
                         updateLeaderboardCallback(data.state.players);
                     }
@@ -196,11 +219,23 @@ class SyncManager {
                         }
                     }
                     break;
+
+                case 'hostChanged':
+                    // Trigger host migration for all guests
+                    if (this.hostMigration) {
+                        this.hostMigration.reconnectToNewHost(data.newHostID);
+                    }
+                    break;
             }
         });
 
         conn.on('close', () => {
-            alert('Connection lost to host. Room closed.');
+            // Trigger host migration instead of immediate room closure
+            if (this.hostMigration) {
+                this.hostMigration.onHostDisconnect();
+            } else {
+                alert('Connection lost to host. Room closed.');
+            }
         });
     }
 
