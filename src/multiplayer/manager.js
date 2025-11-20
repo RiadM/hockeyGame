@@ -25,6 +25,8 @@ class MultiplayerManager {
 
         // Wire up host migration to sync manager
         this.syncManager.setHostMigration(this.hostMigration);
+        // Wire up notification callback to sync manager
+        this.syncManager.setNotificationCallback((msg, type) => this.showNotification(msg, type));
     }
 
     get gameState() {
@@ -178,7 +180,7 @@ class MultiplayerManager {
         if (!this.isHost || this.roomManager.gameState.gameStarted) return;
 
         if (!this.roomManager.areAllPlayersReady()) {
-            alert('Not all players are ready!');
+            this.showNotification('Not all players are ready!', 'error');
             return;
         }
 
@@ -324,6 +326,17 @@ class MultiplayerManager {
         this.syncManager.stopTimer();
         this.reconnectionManager.cleanup();
         this.connectionManager.destroy();
+    }
+
+    showNotification(message, type = 'info') {
+        const msgEl = document.getElementById('game-message');
+        if (msgEl) {
+            msgEl.textContent = message;
+            msgEl.className = `message ${type} show`;
+            if (type !== 'success') {
+                setTimeout(() => msgEl.classList.remove('show'), 4000);
+            }
+        }
     }
 }
 

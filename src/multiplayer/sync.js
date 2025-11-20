@@ -10,6 +10,7 @@ class SyncManager {
         this.turnTimer = null;
         this.turnDuration = 60;
         this.hostMigration = null;
+        this.notificationCallback = null;
     }
 
     setHost(isHost) {
@@ -18,6 +19,10 @@ class SyncManager {
 
     setHostMigration(hostMigration) {
         this.hostMigration = hostMigration;
+    }
+
+    setNotificationCallback(callback) {
+        this.notificationCallback = callback;
     }
 
     addConnection(peerID, conn) {
@@ -43,8 +48,16 @@ class SyncManager {
     handleMessage(data, fromPeer, updateLeaderboardCallback, onPlayerJoinCallback) {
         if (!this.isHost) return;
 
+        // Validate message structure
+        if (!data || typeof data !== 'object') return;
+        if (!data.type || typeof data.type !== 'string') return;
+
         switch (data.type) {
             case 'join':
+                // Validate join message
+                if (typeof data.playerID !== 'string' || typeof data.playerName !== 'string') return;
+                if (data.playerID.length > 100 || data.playerName.length > 100) return;
+
                 const added = this.roomManager.addPlayer(data.playerID, data.playerName);
                 if (!added) {
                     const conn = this.connections.get(data.playerID);
@@ -89,6 +102,10 @@ class SyncManager {
                 break;
 
             case 'chat':
+                // Validate chat message
+                if (typeof data.text !== 'string') return;
+                if (data.text.length > 500 || data.text.length === 0) return;
+
                 const playerName = this.roomManager.gameState.players[fromPeer]?.name || 'Unknown';
                 const chatMsg = this.chatManager.addMessage(playerName, data.text);
                 this.roomManager.gameState.chatMessages = this.chatManager.getMessages();
@@ -98,6 +115,9 @@ class SyncManager {
                 break;
 
             case 'scoreUpdate':
+                // Validate score update
+                if (typeof data.score !== 'number' || data.score < 0) return;
+
                 this.roomManager.updatePlayerScore(fromPeer, data.score);
                 this.roomManager.saveState();
                 this.broadcast({ type: 'players', players: this.roomManager.gameState.players });
@@ -107,6 +127,9 @@ class SyncManager {
                 break;
 
             case 'hintUsed':
+                // Validate hints used
+                if (typeof data.hintsUsed !== 'number' || data.hintsUsed < 0 || data.hintsUsed > 3) return;
+
                 this.roomManager.updatePlayerHints(fromPeer, data.hintsUsed);
                 this.roomManager.saveState();
                 this.broadcast({ type: 'players', players: this.roomManager.gameState.players });
@@ -116,6 +139,9 @@ class SyncManager {
                 break;
 
             case 'completed':
+                // Validate completion
+                if (typeof data.score !== 'number' || data.score < 0) return;
+
                 this.roomManager.markPlayerCompleted(fromPeer, data.score);
                 this.roomManager.saveState();
                 this.broadcast({ type: 'players', players: this.roomManager.gameState.players });
@@ -135,6 +161,9 @@ class SyncManager {
                 break;
 
             case 'guess':
+                // Validate guess
+                if (typeof data.guess !== 'string' || data.guess.length > 100) return;
+
                 const conn = this.connections.get(fromPeer);
                 if (conn) {
                     conn.send({
@@ -234,7 +263,9 @@ class SyncManager {
             if (this.hostMigration) {
                 this.hostMigration.onHostDisconnect();
             } else {
-                alert('Connection lost to host. Room closed.');
+                if (this.notificationCallback) {
+                    this.notificationCallback('Connection lost to host. Room closed.', 'error');
+                }
             }
         });
     }
@@ -249,10 +280,12 @@ class SyncManager {
             if (this.roomManager.gameState.turnTimeLeft <= 0) {
                 this.passTurnToNext();
             } else {
-                // Apply -1pt penalty to current player
-                const currentTurnPlayer = this.roomManager.gameState.players[this.roomManager.gameState.currentTurn];
-                if (currentTurnPlayer) {
-                    currentTurnPlayer.score = Math.max(0, currentTurnPlayer.score - 1);
+                // Skip penalties in simultaneous mode (gameMode !== 'turnBased')
+                if (this.roomManager.gameState.gameMode === 'turnBased') {
+                    const currentTurnPlayer = this.roomManager.gameState.players[this.roomManager.gameState.currentTurn];
+                    if (currentTurnPlayer) {
+                        currentTurnPlayer.score = Math.max(0, currentTurnPlayer.score - 1);
+                    }
                 }
 
                 this.roomManager.saveState();
