@@ -2,10 +2,32 @@
 // Handles mode selection, room management, chat
 
 import { MultiplayerManager } from './multiplayer/manager.js';
+import { LobbyManager } from './multiplayer/lobby.js';
+import { LobbyBrowser } from './ui/LobbyBrowser.js';
 import { HockeyGameDashboard } from './game.js';
+import { GameEventHandlers } from './ui/EventHandlers.js';
 
 // Mode Selection & Chat Setup
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize event handlers for game events
+            const gameEventHandlers = new GameEventHandlers();
+            window.gameEventHandlers = gameEventHandlers; // Store for cleanup if needed
+
+            // Initialize lobby manager
+            const lobbyManager = new LobbyManager();
+            lobbyManager.connectToLobby();
+
+            // Initialize lobby browser
+            const lobbyBrowser = new LobbyBrowser(lobbyManager, {
+                publicRoomsList: document.getElementById('public-rooms-list'),
+                createRoomBtn: document.getElementById('create-room-btn'),
+                privateRoomCheckbox: document.getElementById('private-room-checkbox'),
+                joinRoomInput: document.getElementById('join-room-input'),
+                joinRoomBtn: document.getElementById('join-room-btn'),
+                browseRoomsBtn: document.getElementById('browse-rooms-btn')
+            });
+            lobbyBrowser.init();
+
             const modeModal = document.getElementById('mode-modal');
             const soloBtn = document.getElementById('solo-mode-btn');
             const createRoomBtn = document.getElementById('create-room-btn');
@@ -25,8 +47,8 @@ import { HockeyGameDashboard } from './game.js';
                 window.hockeyGameInstance = new HockeyGameDashboard();
             });
 
-            // Create room
-            createRoomBtn.addEventListener('click', async () => {
+            // Wire up lobby browser callbacks for room creation
+            lobbyBrowser.onRoomCreate = async (isPrivate, password) => {
                 const playerNameInput = document.getElementById('player-name-input');
                 let playerName = playerNameInput.value;
                 const tempMgr = new MultiplayerManager();
@@ -47,11 +69,18 @@ import { HockeyGameDashboard } from './game.js';
                 }
                 keysToRemove.forEach(key => localStorage.removeItem(key));
 
-                const isPrivate = document.getElementById('private-room-checkbox').checked;
-
                 try {
                     window.multiplayerManager = tempMgr;
                     const code = await window.multiplayerManager.createRoom(playerName, isPrivate);
+
+                    // Register room with lobby
+                    await lobbyManager.registerRoom(
+                        code,
+                        window.multiplayerManager.playerID,
+                        playerName,
+                        isPrivate,
+                        password
+                    );
 
                     const rightSidebar = document.querySelector('.right-sidebar');
                     if (rightSidebar) rightSidebar.classList.remove('hidden');
@@ -67,16 +96,10 @@ import { HockeyGameDashboard } from './game.js';
                 } catch (error) {
                     alert('Error creating room: ' + error.message);
                 }
-            });
+            };
 
-            // Join room
-            joinRoomBtn.addEventListener('click', async () => {
-                const code = joinRoomInput.value.trim().toUpperCase();
-                if (!code || code.length !== 6) {
-                    alert('Please enter a valid 6-character room code');
-                    return;
-                }
-
+            // Wire up lobby browser callbacks for room joining
+            lobbyBrowser.onRoomJoin = async (roomCode) => {
                 const playerNameInput = document.getElementById('player-name-input');
                 let playerName = playerNameInput.value;
                 const tempMgr = new MultiplayerManager();
@@ -99,9 +122,9 @@ import { HockeyGameDashboard } from './game.js';
 
                 try {
                     window.multiplayerManager = tempMgr;
-                    await window.multiplayerManager.joinRoom(code, playerName);
+                    await window.multiplayerManager.joinRoom(roomCode, playerName);
 
-                    roomCodeEl.textContent = code;
+                    roomCodeEl.textContent = roomCode;
                     modeModal.style.display = 'none';
 
                     const rightSidebar = document.querySelector('.right-sidebar');
@@ -117,7 +140,7 @@ import { HockeyGameDashboard } from './game.js';
                 } catch (error) {
                     alert('Error joining room: ' + error.message);
                 }
-            });
+            };
 
             // Chat send
             const sendMessage = () => {
@@ -148,7 +171,7 @@ import { HockeyGameDashboard } from './game.js';
                             roomCodeDisplay.style.borderColor = '';
                         }, 1000);
                     } catch (err) {
-                        console.error('Copy failed:', err);
+                        // Copy failed silently
                     }
                 });
             }

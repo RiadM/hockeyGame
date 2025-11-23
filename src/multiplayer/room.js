@@ -121,6 +121,7 @@ class RoomManager {
             const hintsText = player.hintsUsed !== undefined ? `${player.hintsUsed}/3 hints` : '';
             const statusText = player.completed ? ' DONE' : '';
             const readyText = (!this.gameState.gameStarted && player.ready) ? ' READY' : '';
+            const hostText = player.isHost ? ' (HOST)' : '';
 
             // Create elements using DOM methods (XSS prevention)
             const rankDiv = document.createElement('div');
@@ -129,7 +130,7 @@ class RoomManager {
 
             const nameDiv = document.createElement('div');
             nameDiv.className = 'leaderboard-name';
-            nameDiv.textContent = player.name + statusText + readyText;
+            nameDiv.textContent = player.name + hostText + statusText + readyText;
 
             const hintsDiv = document.createElement('div');
             hintsDiv.className = 'leaderboard-hints';
@@ -197,7 +198,8 @@ class RoomManager {
             chatMessages: this.gameState.chatMessages || [],
             currentRound: this.gameState.currentRound || 1,
             timeLimit: this.gameState.timeLimit || null,
-            gameMode: this.gameState.gameMode || 'unlimited'
+            gameMode: this.gameState.gameMode || 'unlimited',
+            joinOrder: this.gameState.joinOrder || []
         };
     }
 }

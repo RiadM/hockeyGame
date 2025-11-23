@@ -1,0 +1,23 @@
+{
+  "name": "hockey-game-lobby",
+  "version": "1.0.0",
+  "description": "Central lobby server for multiplayer hockey game",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node server/index.js",
+    "test": "echo \"No tests yet\" && exit 0"
+  },
+  "keywords": ["hockey", "multiplayer", "lobby", "webrtc"],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "socket.io": "^4.6.1",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^6.7.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  }
+}

@@ -1231,3 +1231,120 @@
         .right-sidebar::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Lobby Browser Styles */
+        .lobby-header {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .lobby-empty {
+            padding: 20px;
+            text-align: center;
+            font-size: 12px;
+            color: #94a3b8;
+            background: #f8fafc;
+            border-radius: 6px;
+            border: 2px dashed #e2e8f0;
+        }
+
+        .lobby-room-item {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 8px;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .lobby-room-item:hover {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            border-color: #0891b2;
+            transform: translateX(2px);
+        }
+
+        .lobby-room-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .lobby-room-code {
+            font-size: 14px;
+            font-weight: 700;
+            color: #0891b2;
+            letter-spacing: 1px;
+        }
+
+        .lobby-room-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            background: #ffffff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            border: 1px solid #cbd5e1;
+        }
+
+        .lobby-room-host {
+            font-size: 11px;
+            color: #334155;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .lobby-join-btn {
+            width: 100%;
+            padding: 6px 8px;
+            font-size: 12px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+            border: none;
+            border-radius: 6px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .lobby-join-btn:hover {
+            background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+            box-shadow: 0 2px 8px rgba(6, 182, 212, 0.3);
+            transform: translateY(-1px);
+        }
+
+        .lobby-join-btn:active {
+            transform: translateY(0);
+        }
+
+        /* Browse Rooms Button */
+        #browse-rooms-btn {
+            width: 100%;
+            padding: 14px;
+            font-size: 14px;
+            font-weight: 600;
+            margin-top: 12px;
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            color: #334155;
+            border: 2px solid #cbd5e1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        #browse-rooms-btn:hover {
+            background: linear-gradient(135deg, #e2e8f0 0%, #cbd5e1 100%);
+            border-color: #94a3b8;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #browse-rooms-btn:active {
+            transform: translateY(0);
+        }

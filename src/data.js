@@ -1,3 +1,7 @@
+// DEPRECATED: This file is kept for reference only
+// Use manifest.json and individual player files in src/data/players/ instead
+// This reduces initial load from 38KB to lazy-loaded 2KB chunks per player
+
 // Auto-generated player data
 export const PLAYERS_DATA = [
   {

@@ -6,6 +6,8 @@ import { ConnectionManager } from './connection.js';
 import { RoomManager } from './room.js';
 import { ChatManager } from './chat.js';
 import { SyncManager } from './sync.js';
+import { HostMigration } from './host-migration.js';
+import { ReconnectionManager } from './reconnection.js';
 
 class MultiplayerManager {
     constructor() {
@@ -13,11 +15,18 @@ class MultiplayerManager {
         this.roomManager = new RoomManager();
         this.chatManager = new ChatManager();
         this.syncManager = new SyncManager(this.roomManager, this.chatManager);
+        this.hostMigration = new HostMigration(this);
+        this.reconnectionManager = new ReconnectionManager(this);
 
         this.playerID = null;
         this.playerName = null;
         this.isHost = false;
         this.roomCode = null;
+
+        // Wire up host migration to sync manager
+        this.syncManager.setHostMigration(this.hostMigration);
+        // Wire up notification callback to sync manager
+        this.syncManager.setNotificationCallback((msg, type) => this.showNotification(msg, type));
     }
 
     get gameState() {
@@ -29,8 +38,6 @@ class MultiplayerManager {
         const backoffDelays = [0, 2000, 5000];
 
         for (let attempt = 0; attempt < maxAttempts; attempt++) {
-            console.log(`[Room Creation] Attempt ${attempt + 1}/${maxAttempts}`);
-
             if (backoffDelays[attempt] > 0) {
                 await new Promise(resolve => setTimeout(resolve, backoffDelays[attempt]));
             }
@@ -42,13 +49,10 @@ class MultiplayerManager {
                 }
 
                 const roomCode = await this.createRoomAttempt(playerName, isPrivate);
-                console.log('[Room Creation] Success on attempt', attempt + 1);
                 this.connectionManager.clearConnectionError();
                 return roomCode;
 
             } catch (error) {
-                console.error(`[Room Creation] Attempt ${attempt + 1} failed:`, error.message);
-
                 if (attempt === maxAttempts - 1) {
                     const errorMsg = this.connectionManager.getUserFriendlyError(error);
                     this.connectionManager.displayConnectionError(errorMsg);
@@ -72,6 +76,10 @@ class MultiplayerManager {
         this.roomManager.playerID = playerID;
         this.roomManager.initializeHost(playerID, playerName);
         this.syncManager.setHost(true);
+
+        // Track host in join order
+        this.hostMigration.recordPlayerJoin(playerID);
+        this.roomManager.gameState.joinOrder = this.hostMigration.joinOrder;
 
         localStorage.setItem('hostPeerID', playerID);
         localStorage.setItem('roomCode', roomCode);
@@ -102,6 +110,17 @@ class MultiplayerManager {
             });
 
             conn.on('data', (data) => {
+                // Track join order for host migration election
+                if (data.type === 'join' || data.type === 'rejoin') {
+                    this.hostMigration.recordPlayerJoin(data.playerID);
+                    this.roomManager.gameState.joinOrder = this.hostMigration.joinOrder;
+                }
+
+                // Cancel disconnect timeout on rejoin
+                if (data.type === 'rejoin') {
+                    this.reconnectionManager.cancelDisconnectTimeout(data.playerID);
+                }
+
                 this.syncManager.handleMessage(
                     data,
                     conn.peer,
@@ -111,10 +130,16 @@ class MultiplayerManager {
             });
 
             conn.on('close', () => {
-                this.roomManager.removePlayer(conn.peer);
-                this.syncManager.removeConnection(conn.peer);
-                this.roomManager.saveState();
-                this.syncManager.broadcast({ type: 'players', players: this.roomManager.gameState.players });
+                // Start 60s reconnection window before removing player
+                this.reconnectionManager.trackDisconnectedPlayer(conn.peer, () => {
+                    // Timeout callback - remove player after 60s
+                    this.hostMigration.recordPlayerLeave(conn.peer);
+                    this.roomManager.gameState.joinOrder = this.hostMigration.joinOrder;
+                    this.roomManager.removePlayer(conn.peer);
+                    this.syncManager.removeConnection(conn.peer);
+                    this.roomManager.saveState();
+                    this.syncManager.broadcast({ type: 'players', players: this.roomManager.gameState.players });
+                });
             });
         });
     }
@@ -146,13 +171,16 @@ class MultiplayerManager {
             (players) => this.roomManager.updateLeaderboard(players),
             (timeLeft) => this.syncManager.updateTimer(timeLeft)
         );
+
+        // Start reconnection monitoring
+        this.reconnectionManager.startConnectionMonitoring(conn);
     }
 
     startGame() {
         if (!this.isHost || this.roomManager.gameState.gameStarted) return;
 
         if (!this.roomManager.areAllPlayersReady()) {
-            alert('Not all players are ready!');
+            this.showNotification('Not all players are ready!', 'error');
             return;
         }
 
@@ -296,7 +324,19 @@ class MultiplayerManager {
 
     disconnect() {
         this.syncManager.stopTimer();
+        this.reconnectionManager.cleanup();
         this.connectionManager.destroy();
+    }
+
+    showNotification(message, type = 'info') {
+        const msgEl = document.getElementById('game-message');
+        if (msgEl) {
+            msgEl.textContent = message;
+            msgEl.className = `message ${type} show`;
+            if (type !== 'success') {
+                setTimeout(() => msgEl.classList.remove('show'), 4000);
+            }
+        }
     }
 }
 

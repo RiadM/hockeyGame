@@ -1,45 +1,17 @@
 // Hockey Game Logic - Core game mechanics
 // Handles scoring, hints, guessing, round progression
 
-const GAME_CONFIG = {
-    INITIAL_SCORE: 100,
-    HINT_PENALTY: 20,
-    CORRECT_BONUS: 50,
-    WRONG_CHOICE_PENALTY: 10,
-    MAX_HINTS: 3,
-    MAX_ROUNDS: 5,
-    ALLOWED_INPUT_PATTERN: /[^a-z\s'-]/gi,
-    MAX_INPUT_LENGTH: 100,
-    RATE_LIMIT_WINDOW: 1000,
-    MAX_GUESSES_PER_WINDOW: 10,
-    MESSAGE_TIMEOUT: 4000,
-    SHAKE_DURATION: 600
-};
+import { GameState } from './models/GameState.js';
+import { eventBus } from './utils/EventBus.js';
+import { KeyboardHandler } from './utils/KeyboardHandler.js';
+import { GAME_CONFIG } from './config.js';
+import playerService from './services/PlayerService.js';
 
 class HockeyGameDashboard {
             constructor() {
-                this.score = GAME_CONFIG.INITIAL_SCORE;
-                this.roundStartScore = GAME_CONFIG.INITIAL_SCORE;
-                this.maxScore = GAME_CONFIG.INITIAL_SCORE + GAME_CONFIG.CORRECT_BONUS;
-                this.hintsUsed = 0;
-                this.maxHints = GAME_CONFIG.MAX_HINTS;
-                this.hintPenalty = GAME_CONFIG.HINT_PENALTY;
-                this.correctGuessBonus = GAME_CONFIG.CORRECT_BONUS;
-                this.wrongChoicePenalty = 10;
-                this.currentPlayer = null;
-                this.correctAnswer = '';
-                this.gameWon = false;
-                this.multipleChoiceShown = false;
-                this.guessTimestamps = [];
-                this.animatingScore = false;
-                this.playersData = null;
-
-                // 5-round game tracking
-                this.currentRound = 0;
-                this.totalRounds = 5;
-                this.maxPossibleScore = 750; // 5 rounds × 150 pts each
-                this.selectedPlayers = []; // Pre-selected 5 unique players
-                this.roundHistory = []; // Track performance per round
+                // Centralized state management
+                this.gameState = new GameState(GAME_CONFIG);
+                this.keyboardHandler = null;
 
                 this.init();
             }
@@ -85,7 +57,7 @@ class HockeyGameDashboard {
                     this.setupEventListeners();
 
                     // Initialize to round 1
-                    this.currentRound = 1;
+                    this.gameState.setCurrentRound(1);
                     this.updateScoreDisplay(true);
                     this.updateRoundDisplay();
                 } catch (error) {
@@ -100,41 +72,25 @@ class HockeyGameDashboard {
 
             async selectRandomPlayer() {
                 try {
-                    if (!this.playersData) {
-                        const { PLAYERS_DATA } = await import('./data.js');
-                        this.playersData = PLAYERS_DATA;
-                    }
-
-                    if (!this.playersData || !this.playersData.length) {
-                        throw new Error('No players available');
-                    }
-
-                    // If no players selected yet, pre-select 5 unique players
-                    if (this.selectedPlayers.length === 0) {
-                        this.preSelectPlayers();
+                    // If no players selected yet, pre-select 5 unique players using PlayerService
+                    if (this.gameState.selectedPlayers.length === 0) {
+                        const players = await playerService.getRandomPlayers(this.gameState.totalRounds);
+                        this.gameState.setSelectedPlayers(players);
                     }
 
                     // Use current round index to get player (0-indexed)
-                    const playerIndex = this.currentRound - 1;
-                    if (playerIndex >= 0 && playerIndex < this.selectedPlayers.length) {
-                        this.currentPlayer = this.selectedPlayers[playerIndex];
+                    const playerIndex = this.gameState.currentRound - 1;
+                    if (playerIndex >= 0 && playerIndex < this.gameState.selectedPlayers.length) {
+                        this.gameState.setCurrentPlayer(this.gameState.selectedPlayers[playerIndex]);
                     } else {
                         // Fallback to random if something goes wrong
-                        const randomIndex = Math.floor(Math.random() * this.playersData.length);
-                        this.currentPlayer = this.playersData[randomIndex];
+                        const randomPlayer = await playerService.getRandomPlayer();
+                        this.gameState.setCurrentPlayer(randomPlayer);
                     }
-
-                    this.correctAnswer = this.currentPlayer.name.toLowerCase();
                 } catch (error) {
                     console.error('Failed to load player data:', error);
                     throw error;
                 }
-            }
-
-            preSelectPlayers() {
-                // Shuffle all players and pick first 5
-                const shuffled = [...this.playersData].sort(() => Math.random() - 0.5);
-                this.selectedPlayers = shuffled.slice(0, this.totalRounds);
             }
 
             createStatsRow(season) {
@@ -177,8 +133,8 @@ class HockeyGameDashboard {
             }
 
             populateTable() {
-                if (!this.currentPlayer) return;
-                const allSeasons = this.currentPlayer.seasons
+                if (!this.gameState.currentPlayer) return;
+                const allSeasons = this.gameState.currentPlayer.seasons
                     .sort((a, b) => a.season.localeCompare(b.season));
                 const fragment = document.createDocumentFragment();
                 allSeasons.forEach(season => {
@@ -189,45 +145,139 @@ class HockeyGameDashboard {
             }
 
             setupEventListeners() {
-                this.guessBtn.addEventListener('click', () => this.handleGuess());
-                this.hintBtn.addEventListener('click', () => this.handleHint());
-                this.playerInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') this.handleGuess();
-                });
-                this.playerInput.addEventListener('input', () => {
-                    this.playerInput.classList.remove('incorrect', 'correct');
-                });
+                try {
+                    // Button click handlers with error boundaries
+                    this.guessBtn.addEventListener('click', () => {
+                        try {
+                            this.handleGuess();
+                        } catch (error) {
+                            this.handleError('Failed to process guess', error);
+                        }
+                    });
 
-                // Modal handlers
-                this.scoreInfoBtn.addEventListener('click', () => {
-                    this.gameInfoModal.classList.add('show');
-                });
+                    this.hintBtn.addEventListener('click', () => {
+                        try {
+                            this.handleHint();
+                        } catch (error) {
+                            this.handleError('Failed to show hint', error);
+                        }
+                    });
 
-                this.gameInfoClose.addEventListener('click', () => {
-                    this.gameInfoModal.classList.remove('show');
-                });
+                    this.playerInput.addEventListener('keypress', (e) => {
+                        try {
+                            if (e.key === 'Enter') this.handleGuess();
+                        } catch (error) {
+                            this.handleError('Failed to process guess', error);
+                        }
+                    });
 
-                this.gameInfoModal.addEventListener('click', (e) => {
-                    if (e.target === this.gameInfoModal) {
+                    this.playerInput.addEventListener('input', () => {
+                        try {
+                            this.playerInput.classList.remove('incorrect', 'correct');
+                        } catch (error) {
+                            console.error('Input handler error:', error);
+                        }
+                    });
+
+                    // Modal handlers with error boundaries
+                    this.scoreInfoBtn.addEventListener('click', () => {
+                        try {
+                            this.gameInfoModal.classList.add('show');
+                        } catch (error) {
+                            this.handleError('Failed to open modal', error);
+                        }
+                    });
+
+                    this.gameInfoClose.addEventListener('click', () => {
+                        try {
+                            this.closeAllModals();
+                        } catch (error) {
+                            this.handleError('Failed to close modal', error);
+                        }
+                    });
+
+                    this.gameInfoModal.addEventListener('click', (e) => {
+                        try {
+                            if (e.target === this.gameInfoModal) {
+                                this.gameInfoModal.classList.remove('show');
+                            }
+                        } catch (error) {
+                            this.handleError('Failed to close modal', error);
+                        }
+                    });
+
+                    // Restart button with error boundary
+                    this.restartBtn.addEventListener('click', () => {
+                        try {
+                            this.resetGame();
+                        } catch (error) {
+                            this.handleError('Failed to reset game', error);
+                        }
+                    });
+
+                    // Final modal New Game button with error boundary
+                    this.finalNewGameBtn.addEventListener('click', () => {
+                        try {
+                            this.finalModal.classList.remove('show');
+                            this.resetGame();
+                        } catch (error) {
+                            this.handleError('Failed to start new game', error);
+                        }
+                    });
+
+                    // Initialize keyboard handler
+                    this.keyboardHandler = new KeyboardHandler({
+                        onSpace: () => {
+                            try {
+                                this.handleHint();
+                            } catch (error) {
+                                this.handleError('Failed to show hint', error);
+                            }
+                        },
+                        onEnter: () => {
+                            try {
+                                this.handleGuess();
+                            } catch (error) {
+                                this.handleError('Failed to process guess', error);
+                            }
+                        },
+                        onEscape: () => {
+                            try {
+                                this.closeAllModals();
+                            } catch (error) {
+                                this.handleError('Failed to close modals', error);
+                            }
+                        }
+                    });
+                } catch (error) {
+                    console.error('Failed to setup event listeners:', error);
+                    this.handleFatalError(error);
+                }
+            }
+
+            closeAllModals() {
+                try {
+                    if (this.gameInfoModal) {
                         this.gameInfoModal.classList.remove('show');
                     }
-                });
+                    if (this.finalModal) {
+                        this.finalModal.classList.remove('show');
+                    }
+                } catch (error) {
+                    console.error('Error closing modals:', error);
+                }
+            }
 
-                // Restart button
-                this.restartBtn.addEventListener('click', () => this.resetGame());
-
-                // Final modal New Game button
-                this.finalNewGameBtn.addEventListener('click', () => {
-                    this.finalModal.classList.remove('show');
-                    this.resetGame();
-                });
+            handleError(message, error) {
+                console.error(message, error);
+                this.showMessage(message + '. Please try again.', 'error');
             }
 
             updateRoundDisplay() {
-                this.roundValue.textContent = `${this.currentRound} / ${this.totalRounds}`;
+                this.roundValue.textContent = `${this.gameState.currentRound} / ${this.gameState.totalRounds}`;
 
                 // Update overall progress bar
-                const progressPercentage = (this.currentRound / this.totalRounds) * 100;
+                const progressPercentage = (this.gameState.currentRound / this.gameState.totalRounds) * GAME_CONFIG.PERCENTAGE_MULTIPLIER;
                 this.roundProgressBar.style.width = `${progressPercentage}%`;
             }
 
@@ -240,149 +290,182 @@ class HockeyGameDashboard {
 
             isRateLimited() {
                 const now = Date.now();
-                this.guessTimestamps = this.guessTimestamps.filter(
-                    t => now - t < GAME_CONFIG.RATE_LIMIT_WINDOW
-                );
-                return this.guessTimestamps.length >= GAME_CONFIG.MAX_GUESSES_PER_WINDOW;
+                this.gameState.clearGuessTimestamps(now - GAME_CONFIG.RATE_LIMIT_WINDOW);
+                return this.gameState.guessTimestamps.length >= GAME_CONFIG.MAX_GUESSES_PER_WINDOW;
             }
 
             handleGuess() {
-                if (this.gameWon) {
-                    this.showMessage('You already won! Refresh to play again.', 'info');
-                    return;
-                }
+                try {
+                    if (this.gameState.gameWon) {
+                        this.showMessage('You already won! Use New Game to play again.', 'info');
+                        return;
+                    }
 
-                if (this.isRateLimited()) {
-                    this.showMessage('Too many guesses. Please wait.', 'error');
-                    return;
-                }
+                    if (this.isRateLimited()) {
+                        this.showMessage('Too many guesses. Please wait.', 'error');
+                        return;
+                    }
 
-                this.guessTimestamps.push(Date.now());
-                const guess = this.sanitizeInput(this.playerInput.value);
+                    this.gameState.addGuessTimestamp(Date.now());
+                    const guess = this.sanitizeInput(this.playerInput.value);
 
-                if (!guess) {
-                    this.showMessage('Please enter a valid player name', 'error');
-                    return;
-                }
+                    if (!guess) {
+                        this.showMessage('Please enter a valid player name', 'error');
+                        return;
+                    }
 
-                // Multiplayer mode: broadcast guess to host for validation
-                if (window.multiplayerManager && !window.multiplayerManager.isHost) {
-                    window.multiplayerManager.sendGuess(guess);
-                    return;
-                }
+                    // Multiplayer mode: broadcast guess to host for validation
+                    if (window.multiplayerManager && !window.multiplayerManager.isHost) {
+                        window.multiplayerManager.sendGuess(guess);
+                        return;
+                    }
 
-                // Solo mode or host: validate locally
-                if (guess === this.correctAnswer) {
-                    this.handleCorrectGuess();
-                } else {
-                    this.handleIncorrectGuess();
+                    // Solo mode or host: validate locally
+                    if (guess === this.gameState.correctAnswer) {
+                        this.handleCorrectGuess();
+                    } else {
+                        this.handleIncorrectGuess();
+                    }
+                } catch (error) {
+                    this.handleError('Error processing guess', error);
                 }
             }
 
             async handleCorrectGuess() {
-                this.gameWon = true;
-                const delta = this.correctGuessBonus;
-                const newScore = this.score + delta;
+                try {
+                    this.gameState.setGameWon(true);
+                    const delta = GAME_CONFIG.CORRECT_BONUS;
+                    const newScore = this.gameState.score + delta;
 
-                // Track round performance
-                this.roundHistory.push({
-                    round: this.currentRound,
-                    player: this.currentPlayer.name,
-                    startScore: this.roundStartScore,
-                    endScore: newScore,
-                    hintsUsed: this.hintsUsed,
-                    pointsGained: delta
-                });
+                    // Track round performance
+                    this.gameState.addRoundHistory({
+                        round: this.gameState.currentRound,
+                        player: this.gameState.currentPlayer.name,
+                        startScore: this.gameState.roundStartScore,
+                        endScore: newScore,
+                        hintsUsed: this.gameState.hintsUsed,
+                        pointsGained: delta
+                    });
 
-                this.animateScoreChange(this.score, newScore, delta);
-                this.revealAllColumns();
+                    this.animateScoreChange(this.gameState.score, newScore, delta);
+                    this.revealAllColumns();
 
-                // Broadcast completion to multiplayer
-                if (window.multiplayerManager) {
-                    window.multiplayerManager.broadcastCompletion(newScore);
+                    // Broadcast completion to multiplayer
+                    if (window.multiplayerManager) {
+                        window.multiplayerManager.broadcastCompletion(newScore);
 
-                    // Replace table with waiting screen (multiplayer only)
-                    const mainContent = document.querySelector('.main-content');
-                    if (mainContent) {
-                        mainContent.innerHTML = `
-                            <div style="display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 12px; flex-direction: column; padding: 40px;">
-                                <div style="font-size: 36px; font-weight: 900; color: #065f46; margin-bottom: 20px;">Correct!</div>
-                                <div style="font-size: 24px; font-weight: 700; color: #047857; margin-bottom: 40px;">${this.currentPlayer.name}</div>
-                                <div style="font-size: 18px; color: #059669; margin-bottom: 20px;">+${delta} points</div>
-                                <div style="font-size: 14px; color: #047857;">Waiting for other players...</div>
-                            </div>
-                        `;
-                    }
-                } else {
-                    // Solo mode - proceed to next round after delay
-                    this.showMessage(`Correct! +${delta} pts`, 'success');
+                        // Replace table with waiting screen (multiplayer only)
+                        const mainContent = document.querySelector('.main-content');
+                        if (mainContent) {
+                            // Use DOM methods to prevent XSS
+                            mainContent.textContent = '';
 
-                    if (this.currentRound < this.totalRounds) {
-                        setTimeout(async () => {
-                            await this.loadNextPlayer();
-                        }, 2000);
+                            const container = document.createElement('div');
+                            container.style.cssText = 'display: flex; align-items: center; justify-content: center; height: 100%; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); border-radius: 12px; flex-direction: column; padding: 40px;';
+
+                            const correctText = document.createElement('div');
+                            correctText.style.cssText = 'font-size: 36px; font-weight: 900; color: #065f46; margin-bottom: 20px;';
+                            correctText.textContent = 'Correct!';
+
+                            const playerName = document.createElement('div');
+                            playerName.style.cssText = 'font-size: 24px; font-weight: 700; color: #047857; margin-bottom: 40px;';
+                            playerName.textContent = this.gameState.currentPlayer.name;
+
+                            const pointsText = document.createElement('div');
+                            pointsText.style.cssText = 'font-size: 18px; color: #059669; margin-bottom: 20px;';
+                            pointsText.textContent = `+${delta} points`;
+
+                            const waitingText = document.createElement('div');
+                            waitingText.style.cssText = 'font-size: 14px; color: #047857;';
+                            waitingText.textContent = 'Waiting for other players...';
+
+                            container.appendChild(correctText);
+                            container.appendChild(playerName);
+                            container.appendChild(pointsText);
+                            container.appendChild(waitingText);
+                            mainContent.appendChild(container);
+                        }
                     } else {
-                        setTimeout(() => {
-                            this.showFinalScore();
-                        }, 2000);
+                        // Solo mode - proceed to next round after delay
+                        this.showMessage(`Correct! +${delta} pts`, 'success');
+
+                        if (this.gameState.currentRound < this.gameState.totalRounds) {
+                            setTimeout(async () => {
+                                try {
+                                    await this.loadNextPlayer();
+                                } catch (error) {
+                                    this.handleError('Failed to load next player', error);
+                                }
+                            }, 2000);
+                        } else {
+                            setTimeout(() => {
+                                try {
+                                    this.showFinalScore();
+                                } catch (error) {
+                                    this.handleError('Failed to show final score', error);
+                                }
+                            }, 2000);
+                        }
                     }
+                } catch (error) {
+                    this.handleError('Error handling correct guess', error);
                 }
             }
 
             async loadNextPlayer() {
-                // Increment round counter
-                this.currentRound++;
-                this.updateRoundDisplay();
+                try {
+                    // Increment round counter
+                    this.gameState.incrementRound();
+                    this.updateRoundDisplay();
 
-                // Reset game state for new player
-                this.gameWon = false;
-                this.hintsUsed = 0;
-                this.multipleChoiceShown = false;
-                this.guessTimestamps = [];
+                    // Reset game state for new player
+                    this.gameState.resetForNewRound();
 
-                // Set new round baseline - current score is 100%
-                this.roundStartScore = this.score;
-                this.maxScore = this.score + this.correctGuessBonus;
+                    // Reset UI
+                    this.playerInput.value = '';
+                    this.playerInput.classList.remove('correct', 'incorrect');
+                    this.playerInput.disabled = false;
+                    this.guessBtn.disabled = false;
+                    this.hintBtn.disabled = false;
 
-                // Reset UI
-                this.playerInput.value = '';
-                this.playerInput.classList.remove('correct', 'incorrect');
-                this.playerInput.disabled = false;
-                this.guessBtn.disabled = false;
-                this.hintBtn.disabled = false;
+                    // Show hints card and input, hide choices
+                    this.hintsCard.classList.remove('hidden');
+                    this.sidebarInputGroup.classList.remove('hidden');
+                    this.playerChoicesContainer.classList.add('hidden');
 
-                // Show hints card and input, hide choices
-                this.hintsCard.classList.remove('hidden');
-                this.sidebarInputGroup.classList.remove('hidden');
-                this.playerChoicesContainer.classList.add('hidden');
+                    // Reset hint dots
+                    for (let i = 1; i <= 3; i++) {
+                        const dot = document.getElementById(`hint-dot-${i}`);
+                        if (dot) dot.classList.remove('used');
+                    }
 
-                // Reset hint dots
-                for (let i = 1; i <= 3; i++) {
-                    const dot = document.getElementById(`hint-dot-${i}`);
-                    if (dot) dot.classList.remove('used');
+                    // Reset hint button text
+                    this.updateHintButtonText();
+
+                    // Load new player
+                    await this.selectRandomPlayer();
+                    this.populateTable();
+
+                    // Hide all columns again
+                    document.querySelectorAll('.team-col, .playoffs, .playoff-col').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+
+                    this.messageEl.classList.remove('show');
+
+                    // Update progress bar to show 100% at round start
+                    this.updateScoreDisplay();
+
+                    // Focus input for accessibility
+                    this.focusInput();
+                } catch (error) {
+                    this.handleError('Failed to load next player', error);
                 }
-
-                // Reset hint button text
-                this.updateHintButtonText();
-
-                // Load new player
-                await this.selectRandomPlayer();
-                this.populateTable();
-
-                // Hide all columns again
-                document.querySelectorAll('.team-col, .playoffs, .playoff-col').forEach(el => {
-                    el.classList.add('hidden');
-                });
-
-                this.messageEl.classList.remove('show');
-
-                // Update progress bar to show 100% at round start
-                this.updateScoreDisplay();
             }
 
             showFinalScore() {
                 // Calculate percentage
-                const percentage = Math.round((this.score / this.maxPossibleScore) * 100);
+                const percentage = Math.round((this.gameState.score / this.gameState.maxPossibleScore) * GAME_CONFIG.PERCENTAGE_MULTIPLIER);
 
                 // Calculate grade
                 let grade = 'F';
@@ -405,15 +488,15 @@ class HockeyGameDashboard {
                 }
 
                 // Update final modal content
-                this.finalYourScore.textContent = this.score;
-                this.finalMaxScore.textContent = this.maxPossibleScore;
+                this.finalYourScore.textContent = this.gameState.score;
+                this.finalMaxScore.textContent = this.gameState.maxPossibleScore;
                 this.finalPercentage.textContent = `${percentage}%`;
                 this.finalGrade.textContent = grade;
                 this.finalGrade.className = `final-grade ${gradeClass}`;
 
                 // Populate breakdown
                 this.breakdownList.innerHTML = '';
-                this.roundHistory.forEach(round => {
+                this.gameState.roundHistory.forEach(round => {
                     const item = document.createElement('div');
                     item.className = 'breakdown-item';
 
@@ -441,15 +524,75 @@ class HockeyGameDashboard {
                 }, 500);
             }
 
-            resetGame() {
-                this.score = GAME_CONFIG.INITIAL_SCORE;
-                this.roundStartScore = GAME_CONFIG.INITIAL_SCORE;
-                this.maxScore = GAME_CONFIG.INITIAL_SCORE + GAME_CONFIG.CORRECT_BONUS;
-                this.currentRound = 0;
-                this.maxPossibleScore = 750;
-                this.roundHistory = [];
-                this.selectedPlayers = [];
-                this.loadNextPlayer();
+            async resetGame() {
+                try {
+                    // Close all modals
+                    this.closeAllModals();
+
+                    // Reset game state completely
+                    this.gameState.reset();
+                    this.gameState.setCurrentRound(1);
+
+                    // Clear UI elements
+                    this.playerInput.value = '';
+                    this.playerInput.classList.remove('correct', 'incorrect');
+                    this.playerInput.disabled = false;
+                    this.guessBtn.disabled = false;
+                    this.hintBtn.disabled = false;
+
+                    // Reset hints display
+                    this.hintsCard.classList.remove('hidden');
+                    this.sidebarInputGroup.classList.remove('hidden');
+                    this.playerChoicesContainer.classList.add('hidden');
+
+                    // Reset hint dots
+                    for (let i = 1; i <= 3; i++) {
+                        const dot = document.getElementById(`hint-dot-${i}`);
+                        if (dot) dot.classList.remove('used');
+                    }
+
+                    // Reset hint button text
+                    this.updateHintButtonText();
+
+                    // Clear messages
+                    this.messageEl.classList.remove('show');
+
+                    // Pre-select new set of players for the game
+                    this.gameState.setSelectedPlayers([]);
+
+                    // Load first player (will also pre-select all 5 players)
+                    await this.selectRandomPlayer();
+                    this.populateTable();
+
+                    // Hide all columns
+                    document.querySelectorAll('.team-col, .playoffs, .playoff-col').forEach(el => {
+                        el.classList.add('hidden');
+                    });
+
+                    // Update displays
+                    this.updateScoreDisplay(true);
+                    this.updateRoundDisplay();
+
+                    // Focus on input for accessibility
+                    this.focusInput();
+
+                    this.showMessage('New game started!', 'info');
+                } catch (error) {
+                    this.handleError('Failed to reset game', error);
+                }
+            }
+
+            focusInput() {
+                try {
+                    if (this.playerInput && !this.playerInput.disabled) {
+                        // Small delay to ensure UI has updated
+                        setTimeout(() => {
+                            this.playerInput.focus();
+                        }, 100);
+                    }
+                } catch (error) {
+                    console.error('Failed to focus input:', error);
+                }
             }
 
             handleIncorrectGuess() {
@@ -461,45 +604,49 @@ class HockeyGameDashboard {
             }
 
             async handleHint() {
-                if (this.gameWon) {
-                    this.showMessage('You already won!', 'info');
-                    return;
+                try {
+                    if (this.gameState.gameWon) {
+                        this.showMessage('You already won!', 'info');
+                        return;
+                    }
+
+                    if (this.gameState.hintsUsed >= this.gameState.maxHints) {
+                        this.showMessage('No more hints available!', 'error');
+                        return;
+                    }
+
+                    this.gameState.incrementHintsUsed();
+                    const delta = -GAME_CONFIG.HINT_PENALTY;
+                    const newScore = this.gameState.score + delta;
+
+                    // Mark hint as used
+                    const hintDot = document.getElementById(`hint-dot-${this.gameState.hintsUsed}`);
+                    if (hintDot) hintDot.classList.add('used');
+
+                    this.animateScoreChange(this.gameState.score, newScore, delta);
+
+                    // Broadcast hint usage to multiplayer
+                    if (window.multiplayerManager) {
+                        window.multiplayerManager.broadcastHintUsed(this.gameState.hintsUsed);
+                    }
+
+                    if (this.gameState.hintsUsed === 1) {
+                        this.revealPlayoffs();
+                        this.showMessage('Playoffs revealed! -20 points', 'info');
+                    } else if (this.gameState.hintsUsed === 2) {
+                        this.revealTeam();
+                        this.showMessage('Team revealed! -20 points', 'info');
+                    } else if (this.gameState.hintsUsed === 3) {
+                        await this.showMultipleChoice();
+                        this.showMessage('Choose from 4 players! -20 points', 'info');
+                        this.hintBtn.disabled = true;
+                    }
+
+                    // Update hint button text for next hint
+                    this.updateHintButtonText();
+                } catch (error) {
+                    this.handleError('Failed to show hint', error);
                 }
-
-                if (this.hintsUsed >= this.maxHints) {
-                    this.showMessage('No more hints available!', 'error');
-                    return;
-                }
-
-                this.hintsUsed++;
-                const delta = -this.hintPenalty;
-                const newScore = this.score - this.hintPenalty;
-
-                // Mark hint as used
-                const hintDot = document.getElementById(`hint-dot-${this.hintsUsed}`);
-                if (hintDot) hintDot.classList.add('used');
-
-                this.animateScoreChange(this.score, newScore, delta);
-
-                // Broadcast hint usage to multiplayer
-                if (window.multiplayerManager) {
-                    window.multiplayerManager.broadcastHintUsed(this.hintsUsed);
-                }
-
-                if (this.hintsUsed === 1) {
-                    this.revealPlayoffs();
-                    this.showMessage('Playoffs revealed! -20 points', 'info');
-                } else if (this.hintsUsed === 2) {
-                    this.revealTeam();
-                    this.showMessage('Team revealed! -20 points', 'info');
-                } else if (this.hintsUsed === 3) {
-                    await this.showMultipleChoice();
-                    this.showMessage('Choose from 4 players! -20 points', 'info');
-                    this.hintBtn.disabled = true;
-                }
-
-                // Update hint button text for next hint
-                this.updateHintButtonText();
             }
 
             updateHintButtonText() {
@@ -509,18 +656,18 @@ class HockeyGameDashboard {
                     'Hint (-20): 4 Choices'
                 ];
 
-                if (this.hintsUsed < this.maxHints) {
-                    this.hintBtn.textContent = hintTexts[this.hintsUsed];
+                if (this.gameState.hintsUsed < this.gameState.maxHints) {
+                    this.hintBtn.textContent = hintTexts[this.gameState.hintsUsed];
                 } else {
                     this.hintBtn.textContent = 'No Hints Left';
                 }
             }
 
             animateScoreChange(fromScore, toScore, delta) {
-                if (this.animatingScore) return;
+                if (this.gameState.animatingScore) return;
 
-                this.animatingScore = true;
-                const duration = 800;
+                this.gameState.setAnimatingScore(true);
+                const duration = GAME_CONFIG.SCORE_ANIMATION_DURATION;
                 const startTime = performance.now();
 
                 // Show delta badge
@@ -532,20 +679,20 @@ class HockeyGameDashboard {
                     const progress = Math.min(elapsed / duration, 1);
 
                     // Easing function for smooth animation
-                    const easeProgress = progress < 0.5
+                    const easeProgress = progress < GAME_CONFIG.EASING_MIDPOINT
                         ? 2 * progress * progress
                         : -1 + (4 - 2 * progress) * progress;
 
                     const currentScore = Math.round(fromScore + (toScore - fromScore) * easeProgress);
-                    this.score = currentScore;
+                    this.gameState.setScore(currentScore);
                     this.updateScoreDisplay();
 
                     if (progress < 1) {
                         requestAnimationFrame(animate);
                     } else {
-                        this.score = toScore;
+                        this.gameState.setScore(toScore);
                         this.updateScoreDisplay();
-                        this.animatingScore = false;
+                        this.gameState.setAnimatingScore(false);
 
                         // Hide delta badge after animation
                         setTimeout(() => {
@@ -562,10 +709,10 @@ class HockeyGameDashboard {
                 // Start round at 100: bar at 100%
                 // Use hint to 80: bar at 80%
                 // Correct to 130: bar at 130%
-                const percentage = (this.score / this.roundStartScore) * 100;
+                const percentage = (this.gameState.score / this.gameState.roundStartScore) * GAME_CONFIG.PERCENTAGE_MULTIPLIER;
 
                 // Update score value
-                this.scoreValue.textContent = this.score;
+                this.scoreValue.textContent = this.gameState.score;
 
                 // Update progress bar width
                 this.scoreProgress.style.width = `${percentage}%`;
@@ -601,13 +748,16 @@ class HockeyGameDashboard {
                 });
 
                 this.playerChoicesContainer.classList.remove('hidden');
-                this.multipleChoiceShown = true;
+                this.gameState.setMultipleChoiceShown(true);
             }
 
             async generatePlayerChoices() {
-                const choices = [this.currentPlayer.name];
-                const otherPlayers = this.playersData
-                    .filter(p => p.name !== this.currentPlayer.name)
+                const choices = [this.gameState.currentPlayer.name];
+
+                // Get all player names from manifest (no data loading required)
+                const allPlayerInfo = await playerService.getAllPlayerInfo();
+                const otherPlayers = allPlayerInfo
+                    .filter(p => p.name !== this.gameState.currentPlayer.name)
                     .map(p => p.name);
 
                 while (choices.length < GAME_CONFIG.MULTIPLE_CHOICE_COUNT && otherPlayers.length > 0) {
@@ -626,9 +776,9 @@ class HockeyGameDashboard {
             }
 
             handleMultipleChoiceClick(playerName, button) {
-                if (this.gameWon) return;
+                if (this.gameState.gameWon) return;
 
-                const isCorrect = playerName.toLowerCase() === this.correctAnswer;
+                const isCorrect = playerName.toLowerCase() === this.gameState.correctAnswer;
 
                 if (isCorrect) {
                     button.classList.add('correct-answer');
@@ -637,9 +787,9 @@ class HockeyGameDashboard {
                     this.handleCorrectGuess();
                 } else {
                     // Wrong choice penalty
-                    const delta = -this.wrongChoicePenalty;
-                    const newScore = this.score + delta;
-                    this.animateScoreChange(this.score, newScore, delta);
+                    const delta = -GAME_CONFIG.WRONG_CHOICE_PENALTY;
+                    const newScore = this.gameState.score + delta;
+                    this.animateScoreChange(this.gameState.score, newScore, delta);
 
                     button.classList.add('wrong-answer');
                     button.disabled = true;
