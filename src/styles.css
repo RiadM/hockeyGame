@@ -64,6 +64,41 @@
             flex-direction: column;
             gap: 12px;
             overflow-y: hidden;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .score-sidebar.collapsed {
+            min-width: 40px;
+            width: 40px;
+        }
+
+        .score-sidebar .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .score-sidebar.collapsed .sidebar-content {
+            display: none;
+        }
+
+        .score-sidebar .collapse-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #0891b2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            z-index: 10;
         }
 
         /* Score Card with Progress Bar Visualization */
@@ -975,6 +1010,41 @@
             flex-direction: column;
             gap: 12px;
             overflow-y: auto;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .right-sidebar.collapsed {
+            min-width: 40px;
+            width: 40px;
+        }
+
+        .right-sidebar .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .right-sidebar.collapsed .sidebar-content {
+            display: none;
+        }
+
+        .right-sidebar .collapse-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #0891b2;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            z-index: 10;
         }
 
         .right-sidebar-section {
@@ -1347,4 +1417,175 @@
 
         #browse-rooms-btn:active {
             transform: translateY(0);
+        }
+        
+        /* Autocomplete dropdown styles */
+        .autocomplete {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .autocomplete-items {
+            position: absolute;
+            border: 1px solid #e2e8f0;
+            border-top: none;
+            z-index: 99;
+            top: 100%;
+            left: 0;
+            right: 0;
+            max-height: 200px;
+            overflow-y: auto;
+            background: #ffffff;
+            border-radius: 0 0 6px 6px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .autocomplete-items div {
+            padding: 8px 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .autocomplete-items div:last-child {
+            border-bottom: none;
+        }
+
+        .autocomplete-items div:hover {
+            background-color: #f1f5f9;
+        }
+
+        .autocomplete-active {
+            background-color: #0891b2 !important;
+            color: #ffffff;
+        }
+        
+        /* Responsive design */
+        @media (max-width: 1024px) {
+            .dashboard-container {
+                grid-template-columns: 20% 1fr 25%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                grid-template-columns: 1fr;
+                grid-template-areas:
+                    "header"
+                    "left-sidebar"
+                    "main-content"
+                    "right-sidebar";
+                height: auto;
+                min-height: 100vh;
+                padding: 4px;
+                gap: 4px;
+            }
+
+            .score-sidebar,
+            .right-sidebar {
+                min-height: auto;
+            }
+
+            .score-sidebar.collapsed,
+            .right-sidebar.collapsed {
+                min-width: 100%;
+                width: 100%;
+            }
+
+            .score-sidebar.collapsed .sidebar-content,
+            .right-sidebar.collapsed .sidebar-content {
+                display: flex;
+            }
+
+            .dashboard-header {
+                padding: 0 12px;
+                height: 50px;
+            }
+
+            .header-title {
+                font-size: 18px;
+            }
+
+            .header-instructions {
+                font-size: 11px;
+            }
+
+            .score-sidebar,
+            .main-content,
+            .right-sidebar {
+                padding: 8px;
+            }
+
+            .stats-table {
+                font-size: 10px;
+            }
+
+            .stats-table th {
+                font-size: 9px;
+                padding: 3px 4px;
+            }
+
+            .stats-table td {
+                padding: 3px 4px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .dashboard-header {
+                padding: 0 8px;
+                height: 45px;
+                flex-direction: column;
+                justify-content: center;
+                align-items: flex-start;
+                gap: 4px;
+            }
+
+            .header-title {
+                font-size: 16px;
+            }
+
+            .header-instructions {
+                font-size: 10px;
+            }
+
+            .score-sidebar,
+            .main-content,
+            .right-sidebar {
+                padding: 6px;
+            }
+
+            .score-card,
+            .hints-card,
+            .sidebar-input-group,
+            .player-choices,
+            .restart-card {
+                padding: 8px;
+            }
+
+            .stats-table {
+                font-size: 9px;
+            }
+
+            .stats-table th {
+                font-size: 8px;
+                padding: 2px 3px;
+            }
+
+            .stats-table td {
+                padding: 2px 3px;
+            }
+
+            .btn {
+                padding: 6px 8px;
+                font-size: 11px;
+            }
+
+            .score-value {
+                font-size: 20px;
+            }
+
+            .room-code {
+                font-size: 18px;
+                padding: 8px;
+            }
         }
