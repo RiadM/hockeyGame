@@ -17,57 +17,63 @@
 
         <!-- Left Sidebar - Score Dashboard -->
         <div class="score-sidebar">
-            <!-- Round Counter -->
-            <div class="round-counter">
-                <div class="round-label">Round</div>
-                <div class="round-value" id="round-value">1 / 5</div>
-                <div class="round-progress-container">
-                    <div class="round-progress-bar" id="round-progress-bar" style="width: 20%;"></div>
-                </div>
-            </div>
-
-            <!-- Score Card with Progress Bar -->
-            <div class="score-card">
-                <button class="score-info-btn" id="score-info-btn" title="Game Info">i</button>
-                <div class="score-label">Current Score</div>
-                <div class="score-display-container">
-                    <span class="score-value" id="score-value">100</span>
-                    <span class="score-max">/ 160</span>
-                    <div class="score-delta" id="score-delta"></div>
-                </div>
-                <div class="score-progress-container">
-                    <div class="score-progress-bar excellent" id="score-progress">
-                        <span class="score-percentage" id="score-percentage">100%</span>
+            <button class="collapse-btn" id="left-sidebar-collapse-btn">-</button>
+            <div class="sidebar-content">
+                <!-- Round Counter -->
+                <div class="round-counter">
+                    <div class="round-label">Round</div>
+                    <div class="round-value" id="round-value">1 / 5</div>
+                    <div class="round-progress-container">
+                        <div class="round-progress-bar" id="round-progress-bar" style="width: 20%;"></div>
                     </div>
                 </div>
-            </div>
 
-            <!-- Hints Card -->
-            <div class="hints-card" id="hints-card">
-                <button class="btn btn-hint" id="hint-btn" style="width: 100%;">Hint (-20): Playoffs</button>
-                <div class="hints-indicator">
-                    <div class="hint-dot" id="hint-dot-1"></div>
-                    <div class="hint-dot" id="hint-dot-2"></div>
-                    <div class="hint-dot" id="hint-dot-3"></div>
+                <!-- Score Card with Progress Bar -->
+                <div class="score-card">
+                    <button class="score-info-btn" id="score-info-btn" title="Game Info">i</button>
+                    <div class="score-label">Current Score</div>
+                    <div class="score-display-container">
+                        <span class="score-value" id="score-value">100</span>
+                        <span class="score-max">/ 160</span>
+                        <div class="score-delta" id="score-delta"></div>
+                    </div>
+                    <div class="score-progress-container">
+                        <div class="score-progress-bar excellent" id="score-progress">
+                            <span class="score-percentage" id="score-percentage">100%</span>
+                        </div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Input Field in Sidebar -->
-            <div class="sidebar-input-group" id="sidebar-input-group">
-                <input type="text" id="player-guess" placeholder="Enter player name..." autocomplete="off">
-                <button class="btn btn-primary" id="guess-btn">Submit Guess</button>
-            </div>
+                <!-- Hints Card -->
+                <div class="hints-card" id="hints-card">
+                    <button class="btn btn-hint" id="hint-btn" style="width: 100%;">Hint (-20): Playoffs</button>
+                    <div class="hints-indicator">
+                        <div class="hint-dot" id="hint-dot-1"></div>
+                        <div class="hint-dot" id="hint-dot-2"></div>
+                        <div class="hint-dot" id="hint-dot-3"></div>
+                    </div>
+                </div>
 
-            <!-- Multiple Choice Buttons in Sidebar -->
-            <div class="player-choices hidden" id="player-choices">
-            </div>
+                <!-- Input Field in Sidebar with Autocomplete -->
+                <div class="sidebar-input-group" id="sidebar-input-group">
+                    <div class="autocomplete" id="player-input-autocomplete">
+                        <input type="text" id="player-guess" placeholder="Enter player name..." autocomplete="off">
+                    </div>
+                    <div id="autocomplete-list" class="autocomplete-items"></div>
+                    <button class="btn btn-primary" id="guess-btn">Submit Guess</button>
+                </div>
 
-            <!-- Spacer to push restart to bottom -->
-            <div style="flex: 1;"></div>
+                <!-- Multiple Choice Buttons in Sidebar -->
+                <div class="player-choices hidden" id="player-choices">
+                </div>
 
-            <!-- Restart Card at Bottom -->
-            <div class="restart-card">
-                <button class="btn btn-primary" id="restart-btn">New Game</button>
+                <!-- Spacer to push restart to bottom -->
+                <div style="flex: 1;"></div>
+
+                <!-- Restart Card at Bottom -->
+                <div class="restart-card">
+                    <button class="btn btn-primary" id="restart-btn">New Game</button>
+                </div>
             </div>
         </div>
 
@@ -110,40 +116,43 @@
 
         <!-- Right Sidebar -->
         <div class="right-sidebar hidden">
-            <!-- Room Info -->
-            <div class="right-sidebar-section">
-                <div class="right-sidebar-title">Room Code (Click to Copy)</div>
-                <div class="room-info">
-                    <div class="room-code" id="room-code-display" title="Click to copy">ABC123</div>
+            <button class="collapse-btn" id="right-sidebar-collapse-btn">-</button>
+            <div class="sidebar-content">
+                <!-- Room Info -->
+                <div class="right-sidebar-section">
+                    <div class="right-sidebar-title">Room Code (Click to Copy)</div>
+                    <div class="room-info">
+                        <div class="room-code" id="room-code-display" title="Click to copy">ABC123</div>
+                    </div>
+                    <button class="btn btn-primary" id="ready-btn" style="width: 100%; margin-top: 8px; display: none;">Ready Up</button>
+                    <button class="btn btn-primary" id="start-game-btn" style="width: 100%; margin-top: 8px; display: none; opacity: 0.5;" disabled>Waiting for Ready (0/1)</button>
                 </div>
-                <button class="btn btn-primary" id="ready-btn" style="width: 100%; margin-top: 8px; display: none;">Ready Up</button>
-                <button class="btn btn-primary" id="start-game-btn" style="width: 100%; margin-top: 8px; display: none; opacity: 0.5;" disabled>Waiting for Ready (0/1)</button>
-            </div>
 
-            <!-- Timer -->
-            <div class="right-sidebar-section" id="timer-section" style="display: none;">
-                <div class="right-sidebar-title">Round Timer</div>
-                <div class="timer-display">
-                    <div class="timer-value" id="timer-display-value">60</div>
-                    <div class="timer-label">-1pt per second</div>
+                <!-- Timer -->
+                <div class="right-sidebar-section" id="timer-section" style="display: none;">
+                    <div class="right-sidebar-title">Round Timer</div>
+                    <div class="timer-display">
+                        <div class="timer-value" id="timer-display-value">60</div>
+                        <div class="timer-label">-1pt per second</div>
+                    </div>
                 </div>
-            </div>
 
-            <!-- Leaderboard -->
-            <div class="right-sidebar-section" style="display: flex; flex-direction: column;">
-                <div class="right-sidebar-title">Leaderboard</div>
-                <div class="leaderboard-list" style="overflow-y: auto; max-height: 300px;">
+                <!-- Leaderboard -->
+                <div class="right-sidebar-section" style="display: flex; flex-direction: column;">
+                    <div class="right-sidebar-title">Leaderboard</div>
+                    <div class="leaderboard-list" style="overflow-y: auto; max-height: 300px;">
+                    </div>
                 </div>
-            </div>
 
-            <!-- Chat -->
-            <div class="right-sidebar-section chat-container" style="flex: 1; min-height: 0;">
-                <div class="right-sidebar-title">Chat <span class="room-players-count" style="font-size: 11px; font-weight: 600; color: #64748b; margin-left: 6px;">(4/8 Players)</span></div>
-                <div class="chat-messages">
-                </div>
-                <div class="chat-input-group">
-                    <input type="text" class="chat-input" placeholder="Message...">
-                    <button class="chat-send-btn">Send</button>
+                <!-- Chat -->
+                <div class="right-sidebar-section chat-container" style="flex: 1; min-height: 0;">
+                    <div class="right-sidebar-title">Chat <span class="room-players-count" style="font-size: 11px; font-weight: 600; color: #64748b; margin-left: 6px;">(4/8 Players)</span></div>
+                    <div class="chat-messages">
+                    </div>
+                    <div class="chat-input-group">
+                        <input type="text" class="chat-input" placeholder="Message...">
+                        <button class="chat-send-btn">Send</button>
+                    </div>
                 </div>
             </div>
         </div>
