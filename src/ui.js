@@ -40,11 +40,18 @@ import { PlayerService } from './services/PlayerService.js';
 
             // Initialize sidebar collapse functionality
             initializeSidebarCollapse();
-            
+
             // Initialize player autocomplete
             initializePlayerAutocomplete();
 
-            // Solo mode - hide multiplayer UI
+            // Auto-start in solo mode (skip modal)
+            modeModal.style.display = 'none';
+            const rightSidebar = document.querySelector('.right-sidebar');
+            if (rightSidebar) rightSidebar.classList.add('hidden');
+            window.multiplayerManager = null;
+            window.hockeyGameInstance = new HockeyGameDashboard();
+
+            // Solo mode button (kept for future use if modal is re-enabled)
             soloBtn.addEventListener('click', () => {
                 modeModal.style.display = 'none';
                 const rightSidebar = document.querySelector('.right-sidebar');
