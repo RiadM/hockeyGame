@@ -3042,7 +3042,14 @@
             const chatInput = document.querySelector('.chat-input');
             const chatSendBtn = document.querySelector('.chat-send-btn');
 
-            // Solo mode - hide multiplayer UI
+            // Auto-start in solo mode (skip modal)
+            modeModal.style.display = 'none';
+            const rightSidebar = document.querySelector('.right-sidebar');
+            if (rightSidebar) rightSidebar.classList.add('hidden');
+            window.multiplayerManager = null;
+            window.hockeyGameInstance = new HockeyGameDashboard();
+
+            // Solo mode button (kept for future use)
             soloBtn.addEventListener('click', () => {
                 modeModal.style.display = 'none';
                 const rightSidebar = document.querySelector('.right-sidebar');
