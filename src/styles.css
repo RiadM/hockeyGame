@@ -24,7 +24,7 @@
 
         .dashboard-container {
             display: grid;
-            grid-template-columns: 15% 1fr 20%;
+            grid-template-columns: 15% 1fr;
             grid-template-rows: 60px 1fr;
             height: 100vh;
             gap: 0;
@@ -1463,7 +1463,7 @@
         /* Responsive design */
         @media (max-width: 1024px) {
             .dashboard-container {
-                grid-template-columns: 20% 1fr 25%;
+                grid-template-columns: 20% 1fr;
             }
         }
 
