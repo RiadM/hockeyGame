@@ -29,8 +29,6 @@ import { PlayerService } from './services/PlayerService.js';
             });
             lobbyBrowser.init();
 
-            const modeModal = document.getElementById('mode-modal');
-            const soloBtn = document.getElementById('solo-mode-btn');
             const createRoomBtn = document.getElementById('create-room-btn');
             const joinRoomBtn = document.getElementById('join-room-btn');
             const joinRoomInput = document.getElementById('join-room-input');
@@ -44,22 +42,11 @@ import { PlayerService } from './services/PlayerService.js';
             // Initialize player autocomplete
             initializePlayerAutocomplete();
 
-            // Auto-start in solo mode (skip modal)
-            modeModal.style.display = 'none';
+            // Auto-start in solo mode
             const rightSidebar = document.querySelector('.right-sidebar');
             if (rightSidebar) rightSidebar.classList.add('hidden');
             window.multiplayerManager = null;
             window.hockeyGameInstance = new HockeyGameDashboard();
-
-            // Solo mode button (kept for future use if modal is re-enabled)
-            soloBtn.addEventListener('click', () => {
-                modeModal.style.display = 'none';
-                const rightSidebar = document.querySelector('.right-sidebar');
-                if (rightSidebar) rightSidebar.classList.add('hidden');
-
-                window.multiplayerManager = null;
-                window.hockeyGameInstance = new HockeyGameDashboard();
-            });
 
             // Wire up lobby browser callbacks for room creation
             lobbyBrowser.onRoomCreate = async (isPrivate, password) => {

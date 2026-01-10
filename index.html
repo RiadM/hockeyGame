@@ -219,56 +219,6 @@
 
     <div class="message" id="game-message"></div>
 
-    <!-- Mode Selection Modal -->
-    <div class="game-info-modal" id="mode-modal" style="display: flex; opacity: 1;">
-        <div class="game-info-content" style="max-width: 480px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border: 2px solid #cbd5e1; box-shadow: 0 20px 60px rgba(8, 145, 178, 0.15), 0 8px 32px rgba(0, 0, 0, 0.12);">
-            <div class="game-info-header" style="border-bottom: 2px solid #e2e8f0; padding-bottom: 20px; margin-bottom: 24px;">
-                <div class="game-info-title" style="font-size: 24px; font-weight: 700; background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">Select Game Mode</div>
-            </div>
-
-            <div style="margin-bottom: 24px;">
-                <label style="display: block; font-size: 12px; font-weight: 600; color: #64748b; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">Player Name</label>
-                <input type="text" id="player-name-input" placeholder="Enter your name" style="width: 100%; padding: 14px 16px; border: 2px solid #cbd5e1; border-radius: 8px; font-size: 15px; font-weight: 500; color: #334155; background: #ffffff; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);" maxlength="20" onfocus="this.style.borderColor='#0891b2'; this.style.boxShadow='0 0 0 3px rgba(8, 145, 178, 0.1)'" onblur="this.style.borderColor='#cbd5e1'; this.style.boxShadow='0 2px 4px rgba(0, 0, 0, 0.04)'">
-                <div style="font-size: 11px; color: #94a3b8; margin-top: 6px;">3-20 characters required</div>
-            </div>
-
-            <button class="btn btn-primary" id="solo-mode-btn" style="width: 100%; padding: 16px; font-size: 15px; font-weight: 600; border-radius: 8px; margin-bottom: 16px; background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%); border: none; box-shadow: 0 4px 12px rgba(8, 145, 178, 0.25); transition: all 0.2s ease;">
-                <span style="display: flex; align-items: center; justify-content: center; gap: 8px;">
-                    <span>Play Solo</span>
-                    <span style="font-size: 18px;">→</span>
-                </span>
-            </button>
-
-            <div style="display: flex; align-items: center; margin: 24px 0; gap: 12px;">
-                <div style="flex: 1; height: 1px; background: linear-gradient(to right, transparent, #cbd5e1, transparent);"></div>
-                <span style="font-size: 11px; font-weight: 600; color: #94a3b8; letter-spacing: 1px;">OR PLAY ONLINE</span>
-                <div style="flex: 1; height: 1px; background: linear-gradient(to left, transparent, #cbd5e1, transparent);"></div>
-            </div>
-
-            <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 16px; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);">
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <button class="btn btn-primary" id="create-room-btn" style="flex: 1; padding: 14px; font-size: 14px; font-weight: 600; border-radius: 6px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border: none; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);">Create Room</button>
-                    <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: #64748b; cursor: pointer; padding: 8px 12px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 6px; transition: all 0.2s ease;" onmouseover="this.style.background='#f1f5f9'; this.style.borderColor='#cbd5e1'" onmouseout="this.style.background='#f8fafc'; this.style.borderColor='#e2e8f0'">
-                        <input type="checkbox" id="private-room-checkbox" style="width: 16px; height: 16px; cursor: pointer; accent-color: #0891b2;">
-                        <span>Private</span>
-                    </label>
-                </div>
-            </div>
-
-            <div style="background: #ffffff; border: 2px solid #e2e8f0; border-radius: 8px; padding: 16px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);">
-                <label style="display: block; font-size: 11px; font-weight: 600; color: #64748b; margin-bottom: 8px; letter-spacing: 0.5px; text-transform: uppercase;">Join Existing Room</label>
-                <div style="display: flex; gap: 8px;">
-                    <input type="text" id="join-room-input" placeholder="ROOM CODE" style="flex: 1; padding: 12px 14px; border: 2px solid #cbd5e1; border-radius: 6px; font-size: 14px; font-weight: 600; letter-spacing: 2px; text-transform: uppercase; color: #334155; background: #f8fafc; text-align: center; transition: all 0.2s ease;" maxlength="6" onfocus="this.style.borderColor='#0891b2'; this.style.background='#ffffff'; this.style.boxShadow='0 0 0 3px rgba(8, 145, 178, 0.1)'" onblur="this.style.borderColor='#cbd5e1'; this.style.background='#f8fafc'; this.style.boxShadow='none'">
-                    <button class="btn btn-primary" id="join-room-btn" style="padding: 12px 24px; font-size: 14px; font-weight: 600; border-radius: 6px; background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%); border: none; box-shadow: 0 2px 8px rgba(6, 182, 212, 0.2);">Join</button>
-                </div>
-            </div>
-
-            <button id="browse-rooms-btn">Browse Public Rooms</button>
-
-            <div id="public-rooms-list" style="max-height: 220px; overflow-y: auto; border: 2px solid #e2e8f0; border-radius: 8px; padding: 12px; margin-top: 12px; display: none; background: #ffffff; box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.02);"></div>
-        </div>
-    </div>
-
     <!-- PeerJS - Zero Setup P2P -->
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <script type="module" src="src/ui.js"></script>
