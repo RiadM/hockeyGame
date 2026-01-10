@@ -1,192 +1,28 @@
 // UI Initialization and Event Handlers
-// Handles mode selection, room management, chat
+// Solo mode game initialization
 
-import { MultiplayerManager } from './multiplayer/manager.js';
-import { LobbyManager } from './multiplayer/lobby.js';
-import { LobbyBrowser } from './ui/LobbyBrowser.js';
 import { HockeyGameDashboard } from './game.js';
 import { GameEventHandlers } from './ui/EventHandlers.js';
 import { PlayerService } from './services/PlayerService.js';
 
-// Mode Selection & Chat Setup
-        document.addEventListener('DOMContentLoaded', () => {
-            // Initialize event handlers for game events
-            const gameEventHandlers = new GameEventHandlers();
-            window.gameEventHandlers = gameEventHandlers; // Store for cleanup if needed
+// Game Setup
+document.addEventListener('DOMContentLoaded', () => {
+    // Initialize event handlers for game events
+    const gameEventHandlers = new GameEventHandlers();
+    window.gameEventHandlers = gameEventHandlers;
 
-            // Initialize lobby manager
-            const lobbyManager = new LobbyManager();
-            lobbyManager.connectToLobby();
+    // Initialize sidebar collapse functionality
+    initializeSidebarCollapse();
 
-            // Initialize lobby browser
-            const lobbyBrowser = new LobbyBrowser(lobbyManager, {
-                publicRoomsList: document.getElementById('public-rooms-list'),
-                createRoomBtn: document.getElementById('create-room-btn'),
-                privateRoomCheckbox: document.getElementById('private-room-checkbox'),
-                joinRoomInput: document.getElementById('join-room-input'),
-                joinRoomBtn: document.getElementById('join-room-btn'),
-                browseRoomsBtn: document.getElementById('browse-rooms-btn')
-            });
-            lobbyBrowser.init();
+    // Initialize player autocomplete
+    initializePlayerAutocomplete();
 
-            const createRoomBtn = document.getElementById('create-room-btn');
-            const joinRoomBtn = document.getElementById('join-room-btn');
-            const joinRoomInput = document.getElementById('join-room-input');
-            const roomCodeEl = document.querySelector('.room-code');
-            const chatInput = document.querySelector('.chat-input');
-            const chatSendBtn = document.querySelector('.chat-send-btn');
-
-            // Initialize sidebar collapse functionality
-            initializeSidebarCollapse();
-
-            // Initialize player autocomplete
-            initializePlayerAutocomplete();
-
-            // Auto-start in solo mode
-            const rightSidebar = document.querySelector('.right-sidebar');
-            if (rightSidebar) rightSidebar.classList.add('hidden');
-            window.multiplayerManager = null;
-            window.hockeyGameInstance = new HockeyGameDashboard();
-
-            // Wire up lobby browser callbacks for room creation
-            lobbyBrowser.onRoomCreate = async (isPrivate, password) => {
-                const playerNameInput = document.getElementById('player-name-input');
-                let playerName = playerNameInput.value;
-                const tempMgr = new MultiplayerManager();
-                playerName = tempMgr.validatePlayerName(playerName);
-
-                if (!playerName) {
-                    alert('Invalid name. Use 3-20 characters (letters, numbers, spaces, hyphens, apostrophes only).');
-                    return;
-                }
-
-                // Clean old localStorage data
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && (key.startsWith('playerID_') || key.startsWith('hostPeerID_') || key === 'roomCode' || key === 'gameState')) {
-                        keysToRemove.push(key);
-                    }
-                }
-                keysToRemove.forEach(key => localStorage.removeItem(key));
-
-                try {
-                    window.multiplayerManager = tempMgr;
-                    const code = await window.multiplayerManager.createRoom(playerName, isPrivate);
-
-                    // Register room with lobby
-                    await lobbyManager.registerRoom(
-                        code,
-                        window.multiplayerManager.playerID,
-                        playerName,
-                        isPrivate,
-                        password
-                    );
-
-                    const rightSidebar = document.querySelector('.right-sidebar');
-                    if (rightSidebar) rightSidebar.classList.remove('hidden');
-
-                    roomCodeEl.textContent = code;
-                    modeModal.style.display = 'none';
-
-                    const readyBtn = document.getElementById('ready-btn');
-                    if (readyBtn) readyBtn.style.display = 'block';
-
-                    window.hockeyGameInstance = new HockeyGameDashboard();
-                    window.multiplayerManager.updateStartButton();
-                } catch (error) {
-                    alert('Error creating room: ' + error.message);
-                }
-            };
-
-            // Wire up lobby browser callbacks for room joining
-            lobbyBrowser.onRoomJoin = async (roomCode) => {
-                const playerNameInput = document.getElementById('player-name-input');
-                let playerName = playerNameInput.value;
-                const tempMgr = new MultiplayerManager();
-                playerName = tempMgr.validatePlayerName(playerName);
-
-                if (!playerName) {
-                    alert('Invalid name. Use 3-20 characters (letters, numbers, spaces, hyphens, apostrophes only).');
-                    return;
-                }
-
-                // Clean old localStorage data
-                const keysToRemove = [];
-                for (let i = 0; i < localStorage.length; i++) {
-                    const key = localStorage.key(i);
-                    if (key && (key.startsWith('playerID_') || key.startsWith('hostPeerID_') || key === 'roomCode' || key === 'gameState')) {
-                        keysToRemove.push(key);
-                    }
-                }
-                keysToRemove.forEach(key => localStorage.removeItem(key));
-
-                try {
-                    window.multiplayerManager = tempMgr;
-                    await window.multiplayerManager.joinRoom(roomCode, playerName);
-
-                    roomCodeEl.textContent = roomCode;
-                    modeModal.style.display = 'none';
-
-                    const rightSidebar = document.querySelector('.right-sidebar');
-                    if (rightSidebar) rightSidebar.classList.remove('hidden');
-
-                    const statusValues = document.querySelectorAll('.status-value');
-                    if (statusValues[0]) statusValues[0].textContent = 'Multiplayer';
-
-                    const readyBtn = document.getElementById('ready-btn');
-                    if (readyBtn) readyBtn.style.display = 'block';
-
-                    window.hockeyGameInstance = new HockeyGameDashboard();
-                } catch (error) {
-                    alert('Error joining room: ' + error.message);
-                }
-            };
-
-            // Chat send
-            const sendMessage = () => {
-                if (!window.multiplayerManager || !chatInput.value.trim()) return;
-                window.multiplayerManager.sendChatMessage(chatInput.value);
-                chatInput.value = '';
-            };
-
-            chatSendBtn.addEventListener('click', sendMessage);
-            chatInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') sendMessage();
-            });
-
-            // Room code click-to-copy
-            const roomCodeDisplay = document.getElementById('room-code-display');
-            if (roomCodeDisplay) {
-                roomCodeDisplay.addEventListener('click', async () => {
-                    const code = roomCodeDisplay.textContent;
-                    try {
-                        await navigator.clipboard.writeText(code);
-                        const originalText = roomCodeDisplay.textContent;
-                        roomCodeDisplay.textContent = 'COPIED!';
-                        roomCodeDisplay.style.background = 'linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%)';
-                        roomCodeDisplay.style.borderColor = '#10b981';
-                        setTimeout(() => {
-                            roomCodeDisplay.textContent = originalText;
-                            roomCodeDisplay.style.background = '';
-                            roomCodeDisplay.style.borderColor = '';
-                        }, 1000);
-                    } catch (err) {
-                        // Copy failed silently
-                    }
-                });
-            }
-
-            // Ready button
-            const readyBtn = document.getElementById('ready-btn');
-            if (readyBtn) {
-                readyBtn.addEventListener('click', () => {
-                    if (window.multiplayerManager) {
-                        window.multiplayerManager.toggleReady();
-                    }
-                });
-            }
-        });
+    // Auto-start in solo mode
+    const rightSidebar = document.querySelector('.right-sidebar');
+    if (rightSidebar) rightSidebar.classList.add('hidden');
+    window.multiplayerManager = null;
+    window.hockeyGameInstance = new HockeyGameDashboard();
+});
 
         // Initialize sidebar collapse functionality
         function initializeSidebarCollapse() {
