@@ -60,6 +60,10 @@ class HockeyGameDashboard {
                     this.gameState.setCurrentRound(1);
                     this.updateScoreDisplay(true);
                     this.updateRoundDisplay();
+
+                    // Remove loading screen
+                    const loadingScreen = document.getElementById('loading-screen');
+                    if (loadingScreen) loadingScreen.remove();
                 } catch (error) {
                     this.handleFatalError(error);
                 }
@@ -134,8 +138,7 @@ class HockeyGameDashboard {
 
             populateTable() {
                 if (!this.gameState.currentPlayer) return;
-                const allSeasons = this.gameState.currentPlayer.seasons
-                    .sort((a, b) => a.season.localeCompare(b.season));
+                const allSeasons = this.gameState.currentPlayer.seasons;
                 const fragment = document.createDocumentFragment();
                 allSeasons.forEach(season => {
                     fragment.appendChild(this.createStatsRow(season));
