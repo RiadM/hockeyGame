@@ -8,11 +8,27 @@
     <link rel="stylesheet" href="src/styles.css">
 </head>
 <body>
+<div id="loading-screen" class="loading-screen">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading game...</div>
+    </div>
+</div>
+<script>
+if (location.protocol === 'file:') {
+    var ls = document.getElementById('loading-screen');
+    ls.querySelector('.loading-spinner').style.display = 'none';
+    ls.querySelector('.loading-text').textContent = 'This game requires a web server. Run: python3 -m http.server';
+}
+</script>
 <div class="dashboard-container">
     <!-- Top Header -->
     <div class="dashboard-header">
         <div class="header-title">Hockey Stats Analytics</div>
-        <div class="header-instructions">Guess the NHL player from their career statistics</div>
+        <div class="header-right">
+            <div class="header-instructions">Guess the NHL player from their career statistics</div>
+            <a href="data-entry.html" class="header-nav-link">+ Add Player</a>
+        </div>
     </div>
 
     <!-- Left Sidebar - Score Dashboard -->

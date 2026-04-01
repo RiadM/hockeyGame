@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hockey Game - Add Player</title>
+    <link rel="stylesheet" href="src/data-entry.css">
+</head>
+<body>
+<div class="page-container">
+    <header class="page-header">
+        <div class="header-left">
+            <a href="index.html" class="header-nav-link">Back to Game</a>
+            <h1 class="header-title">Add Player Data</h1>
+        </div>
+    </header>
+
+    <main class="page-main">
+        <section class="input-section">
+            <div class="section-header">
+                <h2>Paste HockeyDB Text</h2>
+                <p class="section-hint">Go to a player's HockeyDB page, click "View as text", select all text, and paste below.</p>
+            </div>
+            <textarea id="paste-area" class="paste-area" placeholder="Paste player data here...
+
+Example format:
+Tomas Holmstrom
+Left Wing -- shoots L
+Born Jan 23 1973 -- Pitea, Sweden
+[52 yrs. ago]
+Height 6.00 -- Weight 198
+
+Season  Team  Lge  GP  G  A  Pts  PIM  +/-  GP  G  A  Pts  PIM
+1994-95  Lulea HF  SEL  40  14  14  28  56  ..."></textarea>
+            <div class="btn-row">
+                <button id="parse-btn" class="btn btn-primary">Parse Data</button>
+                <button id="clear-btn" class="btn btn-secondary">Clear</button>
+            </div>
+            <div id="status-msg" class="status-msg"></div>
+        </section>
+
+        <section id="preview-section" class="preview-section hidden">
+            <div id="player-tabs" class="player-tabs"></div>
+
+            <div class="preview-table-wrap">
+                <table class="preview-table">
+                    <thead>
+                        <tr>
+                            <th>Season</th><th>Lge</th><th>Team</th>
+                            <th>GP</th><th>G</th><th>A</th><th>Pts</th><th>PIM</th><th>+/-</th>
+                            <th>PGP</th><th>PG</th><th>PA</th><th>PPts</th><th>PPIM</th>
+                        </tr>
+                    </thead>
+                    <tbody id="preview-body"></tbody>
+                </table>
+            </div>
+
+            <div class="output-section">
+                <div class="output-header">
+                    <h3>Generated JSON</h3>
+                    <div class="btn-row">
+                        <button id="copy-btn" class="btn btn-secondary">Copy</button>
+                        <button id="download-btn" class="btn btn-primary">Download .json</button>
+                    </div>
+                </div>
+                <pre id="output" class="json-output"></pre>
+            </div>
+        </section>
+    </main>
+</div>
+<script type="module" src="src/data-entry.js"></script>
+</body>
+</html>

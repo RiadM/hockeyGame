@@ -17,7 +17,7 @@ export class TableRenderer {
     populateTable(player) {
         if (!player || !player.seasons) return;
 
-        const allSeasons = player.seasons.sort((a, b) => a.season.localeCompare(b.season));
+        const allSeasons = player.seasons;
         const fragment = document.createDocumentFragment();
 
         allSeasons.forEach(season => {
