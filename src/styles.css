@@ -1605,11 +1605,45 @@
             }
 
             .score-sidebar .sidebar-input-group {
-                flex: 1 1 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                border-radius: 0;
+                border: none;
+                border-top: 2px solid #0891b2;
+                background: #ffffff;
+                padding: 10px 12px;
+                display: flex;
+                gap: 8px;
+                flex-direction: row;
+                margin: 0;
+            }
+
+            .score-sidebar .sidebar-input-group input {
+                flex: 1;
+                margin-bottom: 0;
+            }
+
+            .score-sidebar .sidebar-input-group .btn {
+                width: auto;
+                padding: 8px 16px;
             }
 
             .score-sidebar .player-choices {
-                flex: 1 1 100%;
+                position: fixed;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                border-radius: 0;
+                border: none;
+                border-top: 2px solid #0891b2;
+                background: #ffffff;
+                padding: 10px 12px;
+                grid-template-columns: 1fr 1fr;
+                margin: 0;
             }
 
             .score-sidebar .restart-card {
@@ -1620,6 +1654,11 @@
             .score-sidebar .restart-card .btn {
                 width: auto;
                 padding: 6px 16px;
+            }
+
+            /* Add bottom padding so content isn't hidden behind fixed input */
+            .main-content {
+                padding-bottom: 70px;
             }
 
             .main-content {
@@ -1660,11 +1699,12 @@
             .message {
                 position: fixed;
                 top: auto;
-                bottom: 12px;
+                bottom: 70px;
                 left: 12px;
                 right: 12px;
                 max-width: none;
                 text-align: center;
+                z-index: 200;
             }
 
             .btn {

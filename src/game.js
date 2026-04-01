@@ -8,6 +8,7 @@ import playerService from './services/PlayerService.js';
 import { TableRenderer } from './ui/TableRenderer.js';
 import { ScoreDisplay } from './ui/ScoreDisplay.js';
 import { WinModal } from './ui/WinModal.js';
+import { HintTooltip } from './ui/HintTooltip.js';
 import { sanitizeInput, isRateLimited } from './logic/GameLogic.js';
 
 class HockeyGameDashboard {
@@ -17,6 +18,7 @@ class HockeyGameDashboard {
         this.tableRenderer = null;
         this.scoreDisplay = null;
         this.winModal = null;
+        this.hintTooltip = null;
         this.init();
     }
 
@@ -62,6 +64,9 @@ class HockeyGameDashboard {
                 breakdownList: document.getElementById('breakdown-list')
             });
 
+            this.hintTooltip = new HintTooltip({ hintBtn: this.hintBtn });
+            this.hintTooltip.attachListeners(0, this.gameState.maxHints);
+
             await this.selectRandomPlayer();
             this.tableRenderer.populateTable(this.gameState.currentPlayer);
             this.setupEventListeners();
@@ -82,8 +87,19 @@ class HockeyGameDashboard {
         const loadingScreen = document.getElementById('loading-screen');
         if (loadingScreen) {
             loadingScreen.querySelector('.loading-spinner').style.display = 'none';
-            loadingScreen.querySelector('.loading-text').textContent =
-                'Game failed to load. Please refresh.';
+            const textEl = loadingScreen.querySelector('.loading-text');
+            textEl.textContent = 'Failed to load game data.';
+            const retryBtn = document.createElement('button');
+            retryBtn.textContent = 'Retry';
+            retryBtn.className = 'btn btn-primary';
+            retryBtn.style.cssText = 'margin-top: 12px; padding: 10px 24px; font-size: 14px;';
+            retryBtn.addEventListener('click', () => {
+                textEl.textContent = 'Retrying...';
+                retryBtn.remove();
+                loadingScreen.querySelector('.loading-spinner').style.display = '';
+                this.init();
+            });
+            loadingScreen.querySelector('.loading-content').appendChild(retryBtn);
         }
     }
 
@@ -188,11 +204,13 @@ class HockeyGameDashboard {
             () => { this.gameState.setScore(newScore); }
         );
         this.tableRenderer.revealAllColumns();
-        this.showMessage(`Correct! +${delta} pts`, 'success');
+        this.winModal.showConfetti();
+        this.showMessage(`Correct! It's ${this.gameState.currentPlayer.name}! +${delta} pts`, 'success');
 
         if (this.gameState.currentRound < this.gameState.totalRounds) {
             setTimeout(() => this.loadNextPlayer(), 2000);
         } else {
+            this.saveHighScore(newScore);
             setTimeout(() => {
                 this.winModal.showFinalModal(
                     newScore,
@@ -306,6 +324,9 @@ class HockeyGameDashboard {
         const texts = [`Hint (-${cost}): Playoffs`, `Hint (-${cost}): Teams`, `Hint (-${cost}): 4 Choices`];
         this.hintBtn.textContent = this.gameState.hintsUsed < this.gameState.maxHints
             ? texts[this.gameState.hintsUsed] : 'No Hints Left';
+        if (this.hintTooltip) {
+            this.hintTooltip.attachListeners(this.gameState.hintsUsed, this.gameState.maxHints);
+        }
     }
 
     async showMultipleChoice() {
@@ -375,6 +396,21 @@ class HockeyGameDashboard {
         if (type !== 'success') {
             setTimeout(() => this.messageEl.classList.remove('show'), GAME_CONFIG.MESSAGE_TIMEOUT);
         }
+    }
+
+    saveHighScore(score) {
+        try {
+            const stored = JSON.parse(localStorage.getItem('hockeyGameHighScores') || '[]');
+            stored.push({ score, date: new Date().toISOString(), rounds: this.gameState.totalRounds });
+            stored.sort((a, b) => b.score - a.score);
+            localStorage.setItem('hockeyGameHighScores', JSON.stringify(stored.slice(0, 10)));
+        } catch (e) { /* localStorage unavailable */ }
+    }
+
+    getHighScores() {
+        try {
+            return JSON.parse(localStorage.getItem('hockeyGameHighScores') || '[]');
+        } catch (e) { return []; }
     }
 }
 
