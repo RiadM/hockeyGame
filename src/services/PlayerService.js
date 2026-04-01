@@ -5,7 +5,21 @@ class PlayerService {
     constructor() {
         this.manifest = null;
         this.cache = new Map();
-        this.manifestPath = './src/data/manifest.json';
+        // Detect base path from current script location for GitHub Pages compatibility
+        this.basePath = this._detectBasePath();
+        this.manifestPath = `${this.basePath}src/data/manifest.json`;
+    }
+
+    _detectBasePath() {
+        // Works on both local dev servers and GitHub Pages
+        const scripts = document.querySelectorAll('script[src]');
+        for (const s of scripts) {
+            if (s.src.includes('src/ui.js')) {
+                return s.src.replace('src/ui.js', '');
+            }
+        }
+        // Fallback: use document base URL
+        return new URL('./', document.baseURI).href;
     }
 
     /**
@@ -51,7 +65,7 @@ class PlayerService {
         }
 
         try {
-            const response = await fetch(`./src/data/${playerEntry.file}`);
+            const response = await fetch(`${this.basePath}src/data/${playerEntry.file}`);
             if (!response.ok) {
                 throw new Error(`Failed to load player ${playerId}: ${response.status} ${response.statusText}`);
             }

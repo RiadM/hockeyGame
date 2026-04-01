@@ -345,6 +345,25 @@
             font-size: 11px;
         }
 
+        .stats-table .header-row th {
+            background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+            font-size: 11px;
+        }
+
+        .stats-table .header-row .regular-season {
+            background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
+            color: #0c4a6e;
+        }
+
+        .stats-table .header-row .playoffs {
+            background: linear-gradient(135deg, #a5f3fc 0%, #67e8f9 100%);
+            color: #0c4a6e;
+        }
+
+        .stats-table .subheader-row th {
+            font-size: 9px;
+        }
+
         .stats-table th {
             background: #f8fafc;
             color: #64748b;

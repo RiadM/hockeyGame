@@ -302,7 +302,8 @@ class HockeyGameDashboard {
     }
 
     updateHintButtonText() {
-        const texts = ['Hint (-20): Playoffs', 'Hint (-20): Teams', 'Hint (-20): 4 Choices'];
+        const cost = GAME_CONFIG.HINT_PENALTY;
+        const texts = [`Hint (-${cost}): Playoffs`, `Hint (-${cost}): Teams`, `Hint (-${cost}): 4 Choices`];
         this.hintBtn.textContent = this.gameState.hintsUsed < this.gameState.maxHints
             ? texts[this.gameState.hintsUsed] : 'No Hints Left';
     }
