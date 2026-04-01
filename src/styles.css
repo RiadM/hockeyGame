@@ -605,7 +605,7 @@
         }
 
         .player-choice-btn {
-            padding: 6px 8px;
+            padding: 8px 10px;
             border: 2px solid #e2e8f0;
             border-radius: 6px;
             background: #ffffff;
@@ -616,6 +616,9 @@
             transition: all 200ms ease;
             outline: none;
             text-align: left;
+            min-height: 44px;
+            display: flex;
+            align-items: center;
         }
 
         .player-choice-btn:hover:not(:disabled) {
@@ -1590,18 +1593,18 @@
             }
 
             .score-sidebar .round-counter {
-                flex: 1;
-                min-width: 80px;
+                flex: 1 1 calc(33% - 8px);
+                min-width: 70px;
             }
 
             .score-sidebar .score-card {
-                flex: 1;
-                min-width: 100px;
+                flex: 1 1 calc(33% - 8px);
+                min-width: 80px;
             }
 
             .score-sidebar .hints-card {
-                flex: 1;
-                min-width: 140px;
+                flex: 1 1 calc(33% - 8px);
+                min-width: 100px;
             }
 
             .score-sidebar .sidebar-input-group {
@@ -1646,6 +1649,12 @@
                 margin: 0;
             }
 
+            .score-sidebar .player-choices .player-choice-btn {
+                min-height: 44px;
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
             .score-sidebar .restart-card {
                 flex: 0;
                 margin-top: 0;
@@ -1656,13 +1665,9 @@
                 padding: 6px 16px;
             }
 
-            /* Add bottom padding so content isn't hidden behind fixed input */
+            /* Padding-bottom prevents content hiding behind fixed input bar */
             .main-content {
-                padding-bottom: 70px;
-            }
-
-            .main-content {
-                padding: 8px;
+                padding: 8px 8px 70px 8px;
                 flex: 1;
                 min-height: 300px;
                 overflow: visible;
@@ -1679,17 +1684,17 @@
             }
 
             .stats-table {
-                font-size: 10px;
+                font-size: 11px;
                 min-width: 600px;
             }
 
             .stats-table th {
-                font-size: 9px;
-                padding: 3px 4px;
+                font-size: 10px;
+                padding: 4px 5px;
             }
 
             .stats-table td {
-                padding: 3px 4px;
+                padding: 4px 5px;
             }
 
             .right-sidebar {
@@ -1738,12 +1743,28 @@
             }
 
             .header-instructions {
-                display: none;
+                font-size: 9px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 150px;
+                opacity: 0.8;
             }
 
             .score-sidebar {
                 padding: 6px;
                 gap: 6px;
+            }
+
+            .score-sidebar .round-counter,
+            .score-sidebar .score-card {
+                flex: 1 1 calc(50% - 6px);
+                min-width: 0;
+            }
+
+            .score-sidebar .hints-card {
+                flex: 1 1 100%;
+                min-width: 0;
             }
 
             .score-card,
@@ -1755,21 +1776,21 @@
             }
 
             .main-content {
-                padding: 4px;
+                padding: 4px 4px 70px 4px;
             }
 
             .stats-table {
-                font-size: 9px;
-                min-width: 500px;
+                font-size: 10px;
+                min-width: 450px;
             }
 
             .stats-table th {
-                font-size: 8px;
-                padding: 2px 3px;
+                font-size: 9px;
+                padding: 3px 4px;
             }
 
             .stats-table td {
-                padding: 2px 3px;
+                padding: 3px 4px;
             }
 
             .score-value {
@@ -1786,5 +1807,36 @@
 
             .final-grade {
                 font-size: 40px;
+            }
+        }
+
+        /* Landscape on mobile — compact vertical space */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .dashboard-header {
+                height: 40px;
+            }
+
+            .score-sidebar {
+                padding: 4px 8px;
+                gap: 4px;
+            }
+
+            .score-sidebar .round-counter,
+            .score-sidebar .score-card,
+            .score-sidebar .hints-card {
+                padding: 4px 8px;
+            }
+
+            .score-sidebar .sidebar-input-group,
+            .score-sidebar .player-choices {
+                padding: 6px 12px;
+            }
+
+            .score-sidebar .player-choices {
+                grid-template-columns: 1fr 1fr 1fr 1fr;
+            }
+
+            .main-content {
+                padding-bottom: 55px;
             }
         }
