@@ -128,7 +128,9 @@ function parseSeasons(lines) {
             }
             if (leagueIdx === null) continue;
 
-            const team = parts.slice(1, leagueIdx).join(' ').replace(/[^a-zA-Z0-9\s.'-]/g, '').trim();
+            const team = parts.slice(1, leagueIdx).join(' ')
+                .replace(/[\u{1F000}-\u{1FFFF}]/gu, '')  // Strip emojis
+                .replace(/[^a-zA-Z0-9\s.'-]/g, '').trim();
             const league = parts[leagueIdx].replace(/[^A-Za-z0-9-]/g, '').trim();
             const stats = parts.slice(leagueIdx + 1);
 

@@ -1,5 +1,5 @@
-```markdown
-# No build artifacts, dependencies, or temporary files detected in changes
-# Only source/config files present (.md, .html, .css, .js)
-```
-.claude/
+node_modules/
+.env
+*.pyc
+__pycache__/
+.DS_Store

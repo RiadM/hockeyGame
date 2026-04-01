@@ -1,5 +1,6 @@
 // ScoreDisplay - Manages score value, progress bar, and animated score changes
-// Handles visual feedback for score updates with delta badges
+
+import { GAME_CONFIG } from '../config.js';
 
 export class ScoreDisplay {
     constructor(elements) {
@@ -42,7 +43,7 @@ export class ScoreDisplay {
         if (this.animatingScore) return;
 
         this.animatingScore = true;
-        const duration = 800;
+        const duration = GAME_CONFIG.SCORE_ANIMATION_DURATION;
         const startTime = performance.now();
 
         // Show delta badge
